@@ -1,3 +1,27 @@
+<?php
+
+include './models/question.php';
+
+// Etablit une connexion à la base de données
+$databaseHandler = new PDO('mysql:dbname=php_quiz;host=127.0.0.1', 'root', 'root');
+// Envoie une requête dans la base de données
+$statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
+// Récupère les résultats de la requête sous forme de tableau associatif
+$result = $statement->fetchAll();
+
+// Isole le premier résultat de la requête (sachant qu'elle est censée renvoyer un seul résultat)
+$questionData = $result[0];
+// Crée un objet Question à partir des données récupérée de la BDD sous forme de tableau associatif
+$question = new Question(
+  $questionData['id'],
+  $questionData['order'],
+  $questionData['text'],
+  $questionData['right_answer_id']
+);
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,9 +44,9 @@
     <div id="answer-result" class="alert alert-danger">
       <i class="fas fa-thumbs-down"></i> Hé non! La bonne réponse était <strong>...</strong>
     </div>
-    <h2 class="mt-4">Question n°<span id="question-id">0</span></h2>
+    <h2 class="mt-4">Question n°<span id="question-id"><?= $question->getOrder() ?></span></h2>
     <form id="question-form" method="post">
-      <p id="current-question-text" class="question-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam sapiente est vero eveniet reiciendis dicta totam, sit omnis modi error iure! Dicta, iure repudiandae optio exercitationem omnis recusandae soluta deleniti!</p>
+      <p id="current-question-text" class="question-text"><?= $question->getText() ?></p>
       <div id="answers" class="d-flex flex-column">
         <div class="custom-control custom-radio mb-2">
           <input class="custom-control-input" type="radio" name="answer" id="answer1" value="1">
