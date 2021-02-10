@@ -1,11 +1,12 @@
 <?php
 
-class Answer{
+class Answer
+{
     /**
      * Database ID
-     * @var int
+     * @var int|null
      */
-    private int $id;
+    private ?int $id;
     /**
      * Text to display
      * @var string
@@ -13,9 +14,9 @@ class Answer{
     private string $text;
     /**
      * Related question database ID
-     * @var int
+     * @var int|null
      */
-    private int $questionId;
+    private ?int $questionId;
 
     /**
      * Create new answer
@@ -24,7 +25,8 @@ class Answer{
      * @param string $text Text to display
      * @param integer $questionId Related question database ID
      */
-    function __construct(int $id = null, string $text = '', int $questionId = null) {
+    function __construct(?int $id = null, string $text = '', ?int $questionId = null)
+    {
         $this->id = $id;
         $this->text = $text; 
         $this->questionId= $questionId;
