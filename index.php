@@ -16,15 +16,12 @@ if ($hasAnswered) {
   // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
   $statement = $databaseHandler->prepare('SELECT * FROM `question` WHERE `id` = :id');
   $statement->execute([ ':id' => $_POST['current-question'] ]);
-  $result = $statement->fetchAll();
-  $questionData = $result[0];
-
-  $previousQuestion = new Question(
-    $questionData['id'],
-    $questionData['order'],
-    $questionData['text'],
-    $questionData['right_answer_id']
+  $result = $statement->fetchAll(PDO::FETCH_FUNC,
+    function(...$params) {
+      return new Question(...$params);
+    }
   );
+  $previousQuestion = $result[0];
 
   // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
   $userAnswerId = intval($_POST['answer']);
@@ -35,14 +32,12 @@ if ($hasAnswered) {
     // Récupère la bonne réponse à la question précédente dans la BDD
     $statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `id` = :id');
     $statement->execute([ ':id' => $previousQuestion->getRightAnswerId() ]);
-    $result = $statement->fetchAll();
-    $answerData = $result[0];
-    
-    $previousQuestionRightAnswer = new Answer(
-      $answerData['text'],
-      $answerData['id'],
-      $answerData['question_id']
+    $result = $statement->fetchAll(PDO::FETCH_FUNC,
+      function(...$params) {
+        return new Answer(...$params);
+      }
     );
+    $previousQuestionRightAnswer = $result[0];
   }
   // Sinon (si l'utilisateur arrive sur la page pour la première fois)
 } else {
@@ -56,31 +51,25 @@ if ($hasAnswered) {
 
 // Récupère la première question du quiz dans la base de données
 $statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
-// Récupère les résultats de la requête sous forme de tableau associatif
-$result = $statement->fetchAll();
-
-// Isole le premier résultat de la requête (sachant qu'elle est censée renvoyer un seul résultat)
-$questionData = $result[0];
-// Crée un objet Question à partir des données récupérées de la BDD sous forme de tableau associatif
-$question = new Question(
-  $questionData['id'],
-  $questionData['order'],
-  $questionData['text'],
-  $questionData['right_answer_id']
+// Récupère les résultats de la requête sous forme d'objets
+$result = $statement->fetchAll(PDO::FETCH_FUNC,
+  function(...$params) {
+    return new Question(...$params);
+  }
 );
+$question = $result[0];
 
+
+
+// Récupère toutes les réponses associées à cette question dans la base de données
 $statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `question_id` = :questionId');
 $statement->execute([ ':questionId' => $question->getId() ]);
 
-$result = $statement->fetchAll();
-
-foreach ($result as $answerData) {
-  $answers []= new Answer(
-    $answerData['text'], 
-    $answerData['id'],
-    $answerData['question_id']
-  );
-};
+$answers = $statement->fetchAll(PDO::FETCH_FUNC,
+  function(...$params) {
+    return new Answer(...$params);
+  }
+);
 
 ?>
 

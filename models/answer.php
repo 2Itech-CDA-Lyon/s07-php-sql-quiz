@@ -13,17 +13,18 @@ class Answer{
     private string $text;
     /**
      * Related question database ID
+     * @var int
      */
     private int $questionId;
 
     /**
-     * Create new anszwer
+     * Create new answer
      *
      * @param integer $id Database ID
      * @param string $text Text to display
      * @param integer $questionId Related question database ID
      */
-    function __construct(int $id, string $text, int $questionId){
+    function __construct(int $id = null, string $text = '', int $questionId = null) {
         $this->id = $id;
         $this->text = $text; 
         $this->questionId= $questionId;
@@ -63,8 +64,11 @@ class Answer{
         return $this;
     }
 
+
     /**
      * Get related question database ID
+     *
+     * @return  int
      */ 
     public function getQuestionId()
     {
@@ -74,9 +78,11 @@ class Answer{
     /**
      * Set related question database ID
      *
+     * @param  int  $questionId  Related question database ID
+     *
      * @return  self
      */ 
-    public function setQuestionId($questionId)
+    public function setQuestionId(int $questionId)
     {
         $this->questionId = $questionId;
 

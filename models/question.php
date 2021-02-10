@@ -2,15 +2,15 @@
 
 class Question{
 
-  private int $id;
-  private int $order;
+  private ?int $id;
   private string $text;
-  private int $rightAnswerId;
+  private int $order;
+  private ?int $rightAnswerId;
 
-  public function __construct(int $id, int $order, string $text, int $rightAnswerId){
+  public function __construct(?int $id = null, string $text = '', int $order = 0, ?int $rightAnswerId = null) {
     $this->id = $id;
-    $this->order = $order;
     $this->text = $text;
+    $this->order = $order;
     $this->rightAnswerId = $rightAnswerId;
   }
 
