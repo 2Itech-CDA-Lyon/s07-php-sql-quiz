@@ -1,21 +1,19 @@
 <?php
 
+include './utils/Database.php';
 
 include './models/question.php';
 include './models/answer.php';
 
-// Etablit une connexion à la base de données
-$databaseHandler = new PDO('mysql:dbname=php_quiz;host=127.0.0.1', 'root', 'root');
-$databaseHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+$databaseHandler = new Database();
 
 // Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
 $hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
 // Si l'utilisateur vient de répondre à une question
 if ($hasAnswered) {
   // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
-  $statement = $databaseHandler->prepare('SELECT * FROM `question` WHERE `id` = :id');
-  $statement->execute([ ':id' => $_POST['current-question'] ]);
+  $statement = $databaseHandler->fetchFromTableById('question', $_POST['current-question']);
   $result = $statement->fetchAll(PDO::FETCH_FUNC,
     function(...$params) {
       return new Question(...$params);
@@ -30,8 +28,7 @@ if ($hasAnswered) {
   // Si l'utilisateur a mal répondu à la question précédente
   if (!$rightlyAnswered) {
     // Récupère la bonne réponse à la question précédente dans la BDD
-    $statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `id` = :id');
-    $statement->execute([ ':id' => $previousQuestion->getRightAnswerId() ]);
+    $statement = $databaseHandler->fetchFromTableById('answer', $previousQuestion->getRightAnswerId());
     $result = $statement->fetchAll(PDO::FETCH_FUNC,
       function(...$params) {
         return new Answer(...$params);
@@ -48,9 +45,10 @@ if ($hasAnswered) {
   
 
 
-
 // Récupère la première question du quiz dans la base de données
-$statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
+// $statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
+$statement = $databaseHandler->fetchFromTableWhere('question', [ 'order' => 1 ]);
+
 // Récupère les résultats de la requête sous forme d'objets
 $result = $statement->fetchAll(PDO::FETCH_FUNC,
   function(...$params) {
@@ -60,11 +58,8 @@ $result = $statement->fetchAll(PDO::FETCH_FUNC,
 $question = $result[0];
 
 
-
 // Récupère toutes les réponses associées à cette question dans la base de données
-$statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `question_id` = :questionId');
-$statement->execute([ ':questionId' => $question->getId() ]);
-
+$statement = $databaseHandler->fetchFromTableWhere('answer', [ 'question_id' => $question->getId() ]);
 $answers = $statement->fetchAll(PDO::FETCH_FUNC,
   function(...$params) {
     return new Answer(...$params);
