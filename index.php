@@ -6,11 +6,14 @@ include './models/answer.php';
 
 // Etablit une connexion à la base de données
 $databaseHandler = new PDO('mysql:dbname=php_quiz;host=127.0.0.1', 'root', 'root');
+$databaseHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 
-
+// Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
+$hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
 // Si l'utilisateur vient de répondre à une question
-if (isset($_POST['answer']) && isset($_POST['current-question'])) {
+if ($hasAnswered) {
+  // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
   $statement = $databaseHandler->prepare('SELECT * FROM `question` WHERE `id` = :id');
   $statement->execute([ ':id' => $_POST['current-question'] ]);
   $result = $statement->fetchAll();
@@ -23,9 +26,24 @@ if (isset($_POST['answer']) && isset($_POST['current-question'])) {
     $questionData['right_answer_id']
   );
 
+  // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
   $userAnswerId = intval($_POST['answer']);
   $rightlyAnswered = $previousQuestion->getRightAnswerId() === $userAnswerId;
-  var_dump($rightlyAnswered);
+
+  // Si l'utilisateur a mal répondu à la question précédente
+  if (!$rightlyAnswered) {
+    // Récupère la bonne réponse à la question précédente dans la BDD
+    $statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `id` = :id');
+    $statement->execute([ ':id' => $previousQuestion->getRightAnswerId() ]);
+    $result = $statement->fetchAll();
+    $answerData = $result[0];
+    
+    $previousQuestionRightAnswer = new Answer(
+      $answerData['text'],
+      $answerData['id'],
+      $answerData['question_id']
+    );
+  }
   // Sinon (si l'utilisateur arrive sur la page pour la première fois)
 } else {
 
@@ -36,7 +54,7 @@ if (isset($_POST['answer']) && isset($_POST['current-question'])) {
 
 
 
-// Envoie une requête dans la base de données
+// Récupère la première question du quiz dans la base de données
 $statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
 // Récupère les résultats de la requête sous forme de tableau associatif
 $result = $statement->fetchAll();
@@ -83,12 +101,19 @@ foreach ($result as $answerData) {
 <body>
   <div class="container">
     <h1>Quizz</h1>
-    <div id="answer-result" class="alert alert-success">
-      <i class="fas fa-thumbs-up"></i> Bravo, c'était la bonne réponse!
-    </div>
-    <div id="answer-result" class="alert alert-danger">
-      <i class="fas fa-thumbs-down"></i> Hé non! La bonne réponse était <strong>...</strong>
-    </div>
+
+    <?php if ($hasAnswered): ?>
+      <?php if ($rightlyAnswered): ?>
+        <div id="answer-result" class="alert alert-success">
+          <i class="fas fa-thumbs-up"></i> Bravo, c'était la bonne réponse!
+        </div>
+      <?php else: ?>
+        <div id="answer-result" class="alert alert-danger">
+          <i class="fas fa-thumbs-down"></i> Hé non! La bonne réponse était <strong><?= $previousQuestionRightAnswer->getText() ?>.</strong>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+
     <h2 class="mt-4">Question n°<span id="question-id"><?= $question->getOrder() ?></span></h2>
     <form id="question-form" method="post">
       <p id="current-question-text" class="question-text"><?= $question->getText() ?></p>
