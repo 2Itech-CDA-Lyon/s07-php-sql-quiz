@@ -1,9 +1,41 @@
 <?php
 
+
 include './models/question.php';
+include './models/answer.php';
 
 // Etablit une connexion à la base de données
 $databaseHandler = new PDO('mysql:dbname=php_quiz;host=127.0.0.1', 'root', 'root');
+
+
+
+// Si l'utilisateur vient de répondre à une question
+if (isset($_POST['answer']) && isset($_POST['current-question'])) {
+  $statement = $databaseHandler->prepare('SELECT * FROM `question` WHERE `id` = :id');
+  $statement->execute([ ':id' => $_POST['current-question'] ]);
+  $result = $statement->fetchAll();
+  $questionData = $result[0];
+
+  $previousQuestion = new Question(
+    $questionData['id'],
+    $questionData['order'],
+    $questionData['text'],
+    $questionData['right_answer_id']
+  );
+
+  $userAnswerId = intval($_POST['answer']);
+  $rightlyAnswered = $previousQuestion->getRightAnswerId() === $userAnswerId;
+  var_dump($rightlyAnswered);
+  // Sinon (si l'utilisateur arrive sur la page pour la première fois)
+} else {
+
+}
+  
+  
+  
+
+
+
 // Envoie une requête dans la base de données
 $statement = $databaseHandler->query('SELECT * FROM `question` WHERE `order` = 1');
 // Récupère les résultats de la requête sous forme de tableau associatif
@@ -11,13 +43,26 @@ $result = $statement->fetchAll();
 
 // Isole le premier résultat de la requête (sachant qu'elle est censée renvoyer un seul résultat)
 $questionData = $result[0];
-// Crée un objet Question à partir des données récupérée de la BDD sous forme de tableau associatif
+// Crée un objet Question à partir des données récupérées de la BDD sous forme de tableau associatif
 $question = new Question(
   $questionData['id'],
   $questionData['order'],
   $questionData['text'],
   $questionData['right_answer_id']
 );
+
+$statement = $databaseHandler->prepare('SELECT * FROM `answer` WHERE `question_id` = :questionId');
+$statement->execute([ ':questionId' => $question->getId() ]);
+
+$result = $statement->fetchAll();
+
+foreach ($result as $answerData) {
+  $answers []= new Answer(
+    $answerData['text'], 
+    $answerData['id'],
+    $answerData['question_id']
+  );
+};
 
 ?>
 
@@ -48,26 +93,17 @@ $question = new Question(
     <form id="question-form" method="post">
       <p id="current-question-text" class="question-text"><?= $question->getText() ?></p>
       <div id="answers" class="d-flex flex-column">
+
+        <?php foreach ($answers as $key => $answer): ?>
         <div class="custom-control custom-radio mb-2">
-          <input class="custom-control-input" type="radio" name="answer" id="answer1" value="1">
-          <label class="custom-control-label" for="answer1" id="answer1-caption">Réponse 1</label>
+          <input class="custom-control-input" type="radio" name="answer" id="answer<?= $key ?>" value="<?= $answer->getId() ?>">
+          <label class="custom-control-label" for="answer<?= $key ?>"><?php echo $answer->getText() ?></label>
         </div>
-        <div class="custom-control custom-radio mb-2">
-          <input class="custom-control-input" type="radio" name="answer" id="answer2" value="2">
-          <label class="custom-control-label" for="answer2" id="answer2-caption">Réponse 2</label>
-        </div>
-        <div class="custom-control custom-radio mb-2">
-          <input class="custom-control-input" type="radio" name="answer" id="answer3" value="3">
-          <label class="custom-control-label" for="answer3" id="answer3-caption">Réponse 3</label>
-        </div>
-        <div class="custom-control custom-radio mb-2">
-          <input class="custom-control-input" type="radio" name="answer" id="answer4" value="4">
-          <label class="custom-control-label" for="answer4" id="answer4-caption">Réponse 4</label>
-        </div>
-      </div>
-      <input type="hidden" name="current-question" value="0" />
+        <?php endforeach; ?>
+        
+      </div> 
+      <input type="hidden" name="current-question" value="<?= $question->getId() ?>" />
       <button type="submit" class="btn btn-primary">Valider</button>
     </form>
   </div>
 </body>
-</html>
