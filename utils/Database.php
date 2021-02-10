@@ -10,12 +10,22 @@ class Database
         $this->databaseHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    function fetchFromTableById(string $tableName, int $id): PDOStatement
+    function fetchFromTableById(string $tableName, string $className, int $id)
     {
-        return $this->fetchFromTableWhere($tableName, [ 'id' => $id ]);
+        // Récupère l'ensemble des enregistrements ayant l'ID demandé en bas e de données
+        $result = $this->fetchFromTableWhere($tableName, $className, [ 'id' => $id ]);
+
+        // Si aucun enregistrement ne correspond, renvoie null
+        if (empty($result)) {
+            return null;
+        }
+
+        // Sinon, puisque les ID sont uniques, il ne peut y avoir qu'un seul résultat:
+        // renvoie ce résultat
+        return $result[0];
     }
 
-    function fetchFromTableWhere(string $tableName, array $criteria): PDOStatement
+    function fetchFromTableWhere(string $tableName, string $className, array $criteria): array
     {
         // Construit la requête préparée avec le nom de la table...
         $query = 'SELECT * FROM `' . $tableName . '` ';
@@ -28,11 +38,19 @@ class Database
 
         // Exécute la requête en remplaçant tous les champs variables par leur valeur
         foreach ($criteria as $key => $value) {
-            $params [':' . $key]= $value; 
+            $params [':' . $key]= $value;
         }
         $statement->execute($params);
 
+        // Récupère tous les résultats de la requête sous forme d'objets
+        // de la classe spécifiée en paramètres
+        $result = $statement->fetchAll(PDO::FETCH_FUNC,
+            function (...$params) use ($className) {
+                return new $className(...$params);
+            }
+        );
+
         // Renvoie le gestionnaire de requête
-        return $statement;
+        return $result;
     }
 }
