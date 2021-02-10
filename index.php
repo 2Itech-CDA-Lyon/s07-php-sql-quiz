@@ -6,12 +6,13 @@ include './models/question.php';
 include './models/answer.php';
 
 
+
 // Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
 $hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
 // Si l'utilisateur vient de répondre à une question
 if ($hasAnswered) {
   // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
-  $previousQuestion = Database::getInstance()->fetchFromTableById('question', Question::class, $_POST['current-question']);
+  $previousQuestion = Question::findById($_POST['current-question']);
 
   // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
   $userAnswerId = intval($_POST['answer']);
@@ -20,19 +21,16 @@ if ($hasAnswered) {
   // Si l'utilisateur a mal répondu à la question précédente
   if (!$rightlyAnswered) {
     // Récupère la bonne réponse à la question précédente dans la BDD
-    $previousQuestionRightAnswer = Database::getInstance()->fetchFromTableById('answer', Answer::class, $previousQuestion->getRightAnswerId());
+    $previousQuestionRightAnswer = Answer::findById($previousQuestion->getRightAnswerId());
   }
-  // Sinon (si l'utilisateur arrive sur la page pour la première fois)
-} else {
-
 }
 
 // Récupère la première question du quiz dans la base de données
-$result = Database::getInstance()->fetchFromTableWhere('question', Question::class, [ 'order' => 1 ]);
+$result = Question::findWhere([ 'order' => 1 ]);
 $question = $result[0];
 
 // Récupère toutes les réponses associées à cette question dans la base de données
-$answers = Database::getInstance()->fetchFromTableWhere('answer', Answer::class, [ 'question_id' => $question->getId() ]);
+$answers = Answer::findWhere([ 'question_id' => $question->getId() ]);
 
 ?>
 

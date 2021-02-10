@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Represents an answer to a question from a quiz
+ */
 class Answer
 {
     /**
@@ -31,6 +34,28 @@ class Answer
         $this->text = $text; 
         $this->questionId= $questionId;
     }
+
+    /**
+     * Fetch answer from database based on ID
+     *
+     * @param integer $id ID of the resource to fetch
+     * @return Answer|null
+     */
+    public static function findById(int $id): ?Answer
+    {
+        return Database::getInstance()->fetchFromTableById('answer', Answer::class, $id);
+    }
+
+    /**
+     * Fetch answers from database based on criteria
+     *
+     * @param array $criteria Criteria to be satisfied as collection of key/values
+     * @return array
+     */
+    public static function findWhere(array $criteria): array
+    {
+        return Database::getInstance()->fetchFromTableWhere('answer', Answer::class, $criteria);
+    }  
 
     /**
      * Get database ID
