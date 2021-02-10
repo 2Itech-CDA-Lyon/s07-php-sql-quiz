@@ -1,16 +1,29 @@
 <?php
 
+// Database::getInstance()
+
 class Database
 {
+    private static Database $instance;
+
     private PDO $databaseHandler;
 
-    function __construct()
+    private function __construct()
     {
         $this->databaseHandler = new PDO('mysql:dbname=php_quiz;host=127.0.0.1', 'root', 'root');
         $this->databaseHandler->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    function fetchFromTableById(string $tableName, string $className, int $id)
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new Database();
+        }
+
+        return self::$instance;
+    }
+
+    public function fetchFromTableById(string $tableName, string $className, int $id)
     {
         // Récupère l'ensemble des enregistrements ayant l'ID demandé en bas e de données
         $result = $this->fetchFromTableWhere($tableName, $className, [ 'id' => $id ]);
@@ -25,7 +38,7 @@ class Database
         return $result[0];
     }
 
-    function fetchFromTableWhere(string $tableName, string $className, array $criteria): array
+    public function fetchFromTableWhere(string $tableName, string $className, array $criteria): array
     {
         // Construit la requête préparée avec le nom de la table...
         $query = 'SELECT * FROM `' . $tableName . '` ';

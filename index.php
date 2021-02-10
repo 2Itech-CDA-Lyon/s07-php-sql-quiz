@@ -6,14 +6,12 @@ include './models/question.php';
 include './models/answer.php';
 
 
-$databaseHandler = new Database();
-
 // Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
 $hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
 // Si l'utilisateur vient de répondre à une question
 if ($hasAnswered) {
   // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
-  $previousQuestion = $databaseHandler->fetchFromTableById('question', Question::class, $_POST['current-question']);
+  $previousQuestion = Database::getInstance()->fetchFromTableById('question', Question::class, $_POST['current-question']);
 
   // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
   $userAnswerId = intval($_POST['answer']);
@@ -22,7 +20,7 @@ if ($hasAnswered) {
   // Si l'utilisateur a mal répondu à la question précédente
   if (!$rightlyAnswered) {
     // Récupère la bonne réponse à la question précédente dans la BDD
-    $previousQuestionRightAnswer = $databaseHandler->fetchFromTableById('answer', Answer::class, $previousQuestion->getRightAnswerId());
+    $previousQuestionRightAnswer = Database::getInstance()->fetchFromTableById('answer', Answer::class, $previousQuestion->getRightAnswerId());
   }
   // Sinon (si l'utilisateur arrive sur la page pour la première fois)
 } else {
@@ -30,11 +28,11 @@ if ($hasAnswered) {
 }
 
 // Récupère la première question du quiz dans la base de données
-$result = $databaseHandler->fetchFromTableWhere('question', Question::class, [ 'order' => 1 ]);
+$result = Database::getInstance()->fetchFromTableWhere('question', Question::class, [ 'order' => 1 ]);
 $question = $result[0];
 
 // Récupère toutes les réponses associées à cette question dans la base de données
-$answers = $databaseHandler->fetchFromTableWhere('answer', Answer::class, [ 'question_id' => $question->getId() ]);
+$answers = Database::getInstance()->fetchFromTableWhere('answer', Answer::class, [ 'question_id' => $question->getId() ]);
 
 ?>
 
