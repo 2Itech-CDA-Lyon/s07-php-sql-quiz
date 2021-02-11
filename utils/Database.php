@@ -149,4 +149,21 @@ class Database
         }
         $statement->execute($params);
     }
+
+    public function updateTable(string $tableName, int $id, array $properties): void
+    {
+        $query = 'UPDATE `' . $tableName . '` SET ';
+        foreach (array_keys($properties) as $propertyName) {
+            $sets []= '`' . $propertyName . '` = :' . $propertyName; 
+        }
+        $query .= join(', ', $sets);
+        $query .= ' WHERE `id` = :id';
+
+        $statement = $this->databaseHandler->prepare($query);
+        foreach ($properties as $key => $value) {
+            $params [':' . $key]= $value;
+        }
+        $params [':id'] = $id;
+        $statement->execute($params);
+    }
 }

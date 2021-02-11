@@ -20,7 +20,6 @@ $questions = Question::find();
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->   
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">

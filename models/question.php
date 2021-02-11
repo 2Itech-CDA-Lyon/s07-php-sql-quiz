@@ -83,6 +83,15 @@ class Question
         ]);
     }
 
+    public function update()
+    {
+        return Database::getInstance()->updateTable('question', $this->id, [
+            'text' => $this->text,
+            'order' => $this->order,
+        ]);
+    }
+
+
     /**
      * Get database ID
      *
