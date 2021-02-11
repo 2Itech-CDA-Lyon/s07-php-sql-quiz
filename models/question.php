@@ -74,23 +74,35 @@ class Question
     {
         return Database::getInstance()->fetchFromTableWhere('question', Question::class, $criteria);
     }
+
+    public function save(): void
+    {
+        // Si l'ID de l'objet est nul, c'est donc qu'il n'existe pas encore en BDD
+        if (is_null($this->id)) {
+            // Crée un enregistrement à partir des propriétés de l'objet en BDD
+            $this->insert();
+        // Sinon, c'est qu'il existe déjà en BDD
+        } else {
+            // Met à jour l'enregistrement existant en BDD par rapport aux propriétés de l'objet
+            $this->update();
+        }
+    }
     
-    public function insert()
+    private function insert(): void
     {
-        return Database::getInstance()->insertIntoTable('question', [
+        $this->id = Database::getInstance()->insertIntoTable('question', [
             'text' => $this->text,
             'order' => $this->order,
         ]);
     }
 
-    public function update()
+    private function update(): void
     {
-        return Database::getInstance()->updateTable('question', $this->id, [
+        Database::getInstance()->updateTable('question', $this->id, [
             'text' => $this->text,
             'order' => $this->order,
         ]);
     }
-
 
     /**
      * Get database ID

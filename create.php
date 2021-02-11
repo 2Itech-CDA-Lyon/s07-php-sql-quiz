@@ -27,17 +27,27 @@ $questions = Question::find();
         <h2>Questions</h2>
         <ol class="list-group">
             <?php foreach ($questions as $question): ?>
-            <li class="list-group-item"><?= $question->getText()  ?></li>
+            <li class="list-group-item list-group-item-action d-flex align-items-center">
+                <div class="mr-auto">
+                    <strong>Question <?= $question->getOrder() ?> ➤</strong>
+                    <?= $question->getText() ?>
+                </div>
+                <div class="ml-4">
+                    <a class="btn btn-primary btn-sm" href="/question-edit.php?id=<?= $question->getId() ?>">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                </div>
+            </li>
             <?php endforeach; ?>
         </ol>
 
-        <form method="post" action="/actions/create-question.php">
+        <form method="post" action="/actions/save-question.php">
             <div class="mt-4 mb-3">
                 <label for="newQuestion" class="form-label">Ajouter une nouvelle question</label>
                 <input type="text" name="question-text" class="form-control" id="newQuestion" placeholder="Texte de la question" />
-                <input type="hidden" name="question-count" value="<?= count($questions) ?>" />
-                <button type="submit" class="btn btn-primary">Ajouter</button>
+                <input type="hidden" name="question-order" value="<?= count($questions) + 1 ?>" />
             </div>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
         </form>
     </div>
 </body>

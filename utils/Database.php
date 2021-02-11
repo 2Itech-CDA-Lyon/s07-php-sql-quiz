@@ -129,7 +129,7 @@ class Database
         return $result;
     }
 
-    public function insertIntoTable(string $tableName, array $properties)
+    public function insertIntoTable(string $tableName, array $properties): int
     {
         $query = 'INSERT INTO `' . $tableName . '` (';
         foreach (array_keys($properties) as $propertyName) {
@@ -148,6 +148,8 @@ class Database
             $params [':' . $key]= $value;
         }
         $statement->execute($params);
+
+        return $this->databaseHandler->lastInsertId();
     }
 
     public function updateTable(string $tableName, int $id, array $properties): void
