@@ -168,4 +168,10 @@ class Database
         $params [':id'] = $id;
         $statement->execute($params);
     }
+
+    public function deleteFromTable(string $tableName, int $id): void
+    {
+        $statement = $this->databaseHandler->prepare('DELETE FROM `'. $tableName . '` WHERE `id` = :id');
+        $statement->execute([ ':id' => $id ]);
+    }
 }

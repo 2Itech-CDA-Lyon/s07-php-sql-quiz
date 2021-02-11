@@ -104,6 +104,11 @@ class Question
         ]);
     }
 
+    public function delete(): void
+    {
+        Database::getInstance()->deleteFromTable('question', $this->id);
+    }
+
     /**
      * Get database ID
      *
