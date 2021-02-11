@@ -20,6 +20,8 @@ class Database
 
     /**
      * Create new database handler
+     * 
+     * Made private to prevent any instanciation from outside processes as part of the Singleton design pattern
      */
     private function __construct()
     {
@@ -100,6 +102,30 @@ class Database
         );
 
         // Renvoie le gestionnaire de requête
+        return $result;
+    }
+
+    /**
+     * Fetch all resources from database
+     *
+     * @param string $tableName Table name from which to fetch
+     * @param string $className Class to return objects as
+     * @return array
+     */
+    public function fetchAllTable(string $tableName, string $className) : array
+    {
+        $query = 'SELECT * FROM `'. $tableName .'`';
+
+        $statement = $this->databaseHandler->query($query);
+
+        $result = $statement->fetchAll(
+            PDO::FETCH_FUNC,
+            function (...$params) use ($className)
+            {
+                return new $className(...$params);
+            }
+        );
+
         return $result;
     }
 }

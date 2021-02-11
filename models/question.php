@@ -41,7 +41,18 @@ class Question
         $this->order = $order;
         $this->rightAnswerId = $rightAnswerId;
     }
-    
+
+    /**
+     * 
+     * Fetch All question from databas
+     * 
+     * @return array
+     */
+    public static function find(): array 
+    {
+        return Database::getInstance()->fetchAllTable('question', Question::class);
+    }
+
     /**
      * Fetch question from database based on ID
      *
