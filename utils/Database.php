@@ -128,4 +128,25 @@ class Database
 
         return $result;
     }
+
+    public function insertIntoTable(string $tableName, array $properties)
+    {
+        $query = 'INSERT INTO `' . $tableName . '` (';
+        foreach (array_keys($properties) as $propertyName) {
+            $propertyNames []= '`' . $propertyName . '`';
+            $valueNames []= ':' . $propertyName;
+        }
+        $query .= join(', ', $propertyNames);
+        $query .= ') ';
+
+        $query .= 'VALUES (';
+        $query .= join(', ', $valueNames);
+        $query .= ');';
+
+        $statement = $this->databaseHandler->prepare($query);
+        foreach ($properties as $key => $value) {
+            $params [':' . $key]= $value;
+        }
+        $statement->execute($params);
+    }
 }

@@ -75,6 +75,14 @@ class Question
         return Database::getInstance()->fetchFromTableWhere('question', Question::class, $criteria);
     }
     
+    public function insert()
+    {
+        return Database::getInstance()->insertIntoTable('question', [
+            'text' => $this->text,
+            'order' => $this->order,
+        ]);
+    }
+
     /**
      * Get database ID
      *
