@@ -4,7 +4,7 @@ include './utils/Database.php';
 
 include './models/question.php';
 
-$questions = Question::find();
+$questions = Question::findAll();
 
 ?>
 

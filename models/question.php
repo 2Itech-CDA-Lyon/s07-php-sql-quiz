@@ -48,9 +48,9 @@ class Question
      * 
      * @return array
      */
-    public static function find(): array 
+    public static function findAll(): array 
     {
-        return Database::getInstance()->fetchAllTable('question', Question::class);
+        return Database::getInstance()->fetchAllFromTable('question', Question::class);
     }
 
     /**

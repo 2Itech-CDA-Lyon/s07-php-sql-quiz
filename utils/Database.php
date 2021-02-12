@@ -112,7 +112,7 @@ class Database
      * @param string $className Class to return objects as
      * @return array
      */
-    public function fetchAllTable(string $tableName, string $className) : array
+    public function fetchAllFromTable(string $tableName, string $className) : array
     {
         $query = 'SELECT * FROM `'. $tableName .'`';
 
