@@ -57,4 +57,16 @@ INSERT INTO `question` (`id`, `text`, `order`, `right_answer_id`) VALUES
 (7,	'Lequel de ces signes du zodiaque n\'est pas un signe d\'Eau?',	4,	18),
 (8,	'Combien de doigts ai-je dans mon dos?',	5,	25);
 
--- 2021-02-09 10:26:20
+DROP TABLE IF EXISTS `quiz`;
+CREATE TABLE `quiz` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `difficulty` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `quiz` (`id`, `title`, `description`, `difficulty`) VALUES
+(1,	'Les JOIN en SQL',	'Vous pensez être calé sur les clauses JOIN dans des requêtes SQL? Venez vous mesurer à notre quiz ultime!',	5);
+
+-- 2021-02-12 13:37:26
