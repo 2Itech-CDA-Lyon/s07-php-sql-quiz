@@ -49,14 +49,13 @@ class Database
     /**
      * Fetch resource from database based on ID
      *
-     * @param string $tableName Table name from which to fetch
      * @param string $className Class to return objects as
      * @param integer $id ID of the resource to fetch
      */
-    public function fetchFromTableById(string $tableName, string $className, int $id)
+    public function fetchFromTableById(string $className, int $id)
     {
         // Récupère l'ensemble des enregistrements ayant l'ID demandé en bas e de données
-        $result = $this->fetchFromTableWhere($tableName, $className, [ 'id' => $id ]);
+        $result = $this->fetchFromTableWhere($className, [ 'id' => $id ]);
 
         // Si aucun enregistrement ne correspond, renvoie null
         if (empty($result)) {
@@ -71,13 +70,13 @@ class Database
     /**
      * Fetch collection of resources from database based on criteria
      *
-     * @param string $tableName Table name from which to fetch
      * @param string $className Class to return objects as
      * @param array $criteria Criteria to be satisfied as collection of key/values
      * @return array
      */
-    public function fetchFromTableWhere(string $tableName, string $className, array $criteria): array
+    public function fetchFromTableWhere(string $className, array $criteria): array
     {
+        $tableName = $className::TABLE_NAME;
         // Construit la requête préparée avec le nom de la table...
         $query = 'SELECT * FROM `' . $tableName . '` ';
         // ...puis tous les critères de filtrage
@@ -108,12 +107,13 @@ class Database
     /**
      * Fetch all resources from database
      *
-     * @param string $tableName Table name from which to fetch
      * @param string $className Class to return objects as
      * @return array
      */
-    public function fetchAllFromTable(string $tableName, string $className) : array
+    public function fetchAllFromTable(string $className) : array
     {
+        $tableName = $className::TABLE_NAME;
+
         $query = 'SELECT * FROM `'. $tableName .'`';
 
         $statement = $this->databaseHandler->query($query);
@@ -129,8 +129,10 @@ class Database
         return $result;
     }
 
-    public function insertIntoTable(string $tableName, array $properties): int
+    public function insertIntoTable(string $className, array $properties): int
     {
+        $tableName = $className::TABLE_NAME;
+
         $query = 'INSERT INTO `' . $tableName . '` (';
         foreach (array_keys($properties) as $propertyName) {
             $propertyNames []= '`' . $propertyName . '`';
@@ -152,8 +154,10 @@ class Database
         return $this->databaseHandler->lastInsertId();
     }
 
-    public function updateTable(string $tableName, int $id, array $properties): void
+    public function updateTable(string $className, int $id, array $properties): void
     {
+        $tableName = $className::TABLE_NAME;
+
         $query = 'UPDATE `' . $tableName . '` SET ';
         foreach (array_keys($properties) as $propertyName) {
             $sets []= '`' . $propertyName . '` = :' . $propertyName; 
@@ -169,8 +173,10 @@ class Database
         $statement->execute($params);
     }
 
-    public function deleteFromTable(string $tableName, int $id): void
+    public function deleteFromTable(string $className, int $id): void
     {
+        $tableName = $className::TABLE_NAME;
+
         $statement = $this->databaseHandler->prepare('DELETE FROM `'. $tableName . '` WHERE `id` = :id');
         $statement->execute([ ':id' => $id ]);
     }

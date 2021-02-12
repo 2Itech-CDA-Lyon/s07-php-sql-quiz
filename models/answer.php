@@ -3,23 +3,20 @@
 /**
  * Represents an answer to a question from a quiz
  */
-class Answer
+class Answer extends GeneralModel
 {
-    /**
-     * Database ID
-     * @var int|null
-     */
-    private ?int $id;
+    const TABLE_NAME = 'answer';
+
     /**
      * Text to display
      * @var string
      */
-    private string $text;
+    protected string $text;
     /**
      * Related question database ID
      * @var int|null
      */
-    private ?int $questionId;
+    protected ?int $questionId;
 
     /**
      * Create new answer
@@ -33,38 +30,6 @@ class Answer
         $this->id = $id;
         $this->text = $text; 
         $this->questionId= $questionId;
-    }
-
-    /**
-     * Fetch answer from database based on ID
-     *
-     * @param integer $id ID of the resource to fetch
-     * @return Answer|null
-     */
-    public static function findById(int $id): ?Answer
-    {
-        return Database::getInstance()->fetchFromTableById('answer', Answer::class, $id);
-    }
-
-    /**
-     * Fetch answers from database based on criteria
-     *
-     * @param array $criteria Criteria to be satisfied as collection of key/values
-     * @return array
-     */
-    public static function findWhere(array $criteria): array
-    {
-        return Database::getInstance()->fetchFromTableWhere('answer', Answer::class, $criteria);
-    }  
-
-    /**
-     * Get database ID
-     *
-     * @return  int
-     */ 
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

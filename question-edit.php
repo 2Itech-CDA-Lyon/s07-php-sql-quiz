@@ -1,6 +1,7 @@
 <?php
 
 include './utils/Database.php';
+include './models/GeneralModel.php';
 include './models/question.php';
 
 

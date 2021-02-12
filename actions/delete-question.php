@@ -5,8 +5,8 @@ include '../models/question.php';
 
 // Si on arrive sur ce fichier par une méthode autre que POST, renvoie un code d'erreur
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo('Cannot ' . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI']);
+        http_response_code(405);
+echo('Cannot ' . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI']);
     die();
 }
 
