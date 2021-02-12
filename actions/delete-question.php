@@ -1,6 +1,7 @@
 <?php
 
 include '../utils/Database.php';
+include '../models/AbstractModel.php';
 include '../models/question.php';
 
 // Si on arrive sur ce fichier par une méthode autre que POST, renvoie un code d'erreur

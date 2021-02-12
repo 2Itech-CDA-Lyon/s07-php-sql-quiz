@@ -52,6 +52,7 @@ abstract class AbstractModel
 
     public function delete(): void
     {
-        Database::getInstance()->deleteFromTable(static::class, $this->id);
+        // Database::getInstance()->deleteFromTable(static::class, $this->id);
+        Database::getInstance()->deleteFromTable($this);
     }
 }

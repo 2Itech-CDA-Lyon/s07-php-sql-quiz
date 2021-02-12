@@ -173,11 +173,12 @@ class Database
         $statement->execute($params);
     }
 
-    public function deleteFromTable(string $className, int $id): void
+    public function deleteFromTable(object $instance): void
     {
+        $className = get_class($instance);
         $tableName = $className::TABLE_NAME;
 
         $statement = $this->databaseHandler->prepare('DELETE FROM `'. $tableName . '` WHERE `id` = :id');
-        $statement->execute([ ':id' => $id ]);
+        $statement->execute([ ':id' => $instance->getId() ]);
     }
 }
