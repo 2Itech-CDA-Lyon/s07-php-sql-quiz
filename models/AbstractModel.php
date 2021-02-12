@@ -1,6 +1,6 @@
 <?php
 
-abstract class GeneralModel
+abstract class AbstractModel
 {
     /**
      * Database ID
@@ -32,9 +32,9 @@ abstract class GeneralModel
      * Fetch model from database based on ID
      *
      * @param integer $id ID of the resource to fetch
-     * @return GeneralModel|null
+     * @return AbstractModel|null
      */
-    public static function findById(int $id): ?GeneralModel
+    public static function findById(int $id): ?AbstractModel
     {
         return Database::getInstance()->fetchFromTableById(static::class, $id);
     }

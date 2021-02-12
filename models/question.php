@@ -3,7 +3,7 @@
 /**
  * Represents a question from a quiz
  */
-class Question extends GeneralModel
+class Question extends AbstractModel
 {
     const TABLE_NAME = 'question';
 
