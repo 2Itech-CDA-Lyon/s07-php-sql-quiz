@@ -5,8 +5,6 @@
  */
 class Answer extends AbstractModel
 {
-    const TABLE_NAME = 'answer';
-
     /**
      * Text to display
      * @var string
@@ -30,6 +28,18 @@ class Answer extends AbstractModel
         $this->id = $id;
         $this->text = $text; 
         $this->questionId= $questionId;
+    }
+
+    static public function getTableName(): string
+    {
+        return 'answer';
+    }
+
+    public function getProperties(): array
+    {
+        return [
+            'text' => $this->text,
+        ];
     }
 
     /**

@@ -76,7 +76,7 @@ class Database
      */
     public function fetchFromTableWhere(string $className, array $criteria): array
     {
-        $tableName = $className::TABLE_NAME;
+        $tableName = $className::getTableName();
         // Construit la requête préparée avec le nom de la table...
         $query = 'SELECT * FROM `' . $tableName . '` ';
         // ...puis tous les critères de filtrage
@@ -112,7 +112,7 @@ class Database
      */
     public function fetchAllFromTable(string $className) : array
     {
-        $tableName = $className::TABLE_NAME;
+        $tableName = $className::getTableName();
 
         $query = 'SELECT * FROM `'. $tableName .'`';
 
@@ -129,10 +129,13 @@ class Database
         return $result;
     }
 
-    public function insertIntoTable(string $className, array $properties): int
+    public function insertIntoTable(ActiveRecordModel $instance): int
     {
-        $tableName = $className::TABLE_NAME;
+        // Récupère le nom de la table sur laquelle envoyer la requête
+        $className = get_class($instance);
+        $tableName = $className::getTableName();
 
+        $properties = $instance->getProperties();
         $query = 'INSERT INTO `' . $tableName . '` (';
         foreach (array_keys($properties) as $propertyName) {
             $propertyNames []= '`' . $propertyName . '`';
@@ -154,10 +157,13 @@ class Database
         return $this->databaseHandler->lastInsertId();
     }
 
-    public function updateTable(string $className, int $id, array $properties): void
+    public function updateTable(ActiveRecordModel $instance): void
     {
-        $tableName = $className::TABLE_NAME;
+        // Récupère le nom de la table sur laquelle envoyer la requête
+        $className = get_class($instance);
+        $tableName = $className::getTableName();
 
+        $properties = $instance->getProperties();
         $query = 'UPDATE `' . $tableName . '` SET ';
         foreach (array_keys($properties) as $propertyName) {
             $sets []= '`' . $propertyName . '` = :' . $propertyName; 
@@ -169,15 +175,23 @@ class Database
         foreach ($properties as $key => $value) {
             $params [':' . $key]= $value;
         }
-        $params [':id'] = $id;
+        $params [':id'] = $instance->getId();
         $statement->execute($params);
     }
 
-    public function deleteFromTable(object $instance): void
+    /**
+     * Delete record associated with a given object from database
+     *
+     * @param ActiveRecordModel $instance The object associated with the record to be deleted
+     * @return void
+     */
+    public function deleteFromTable(ActiveRecordModel $instance): void
     {
+        // Récupère le nom de table du modèle
         $className = get_class($instance);
-        $tableName = $className::TABLE_NAME;
+        $tableName = $className::getTableName();
 
+        // Envoie une requête de suppression en base de données
         $statement = $this->databaseHandler->prepare('DELETE FROM `'. $tableName . '` WHERE `id` = :id');
         $statement->execute([ ':id' => $instance->getId() ]);
     }

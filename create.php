@@ -1,7 +1,7 @@
 <?php
 
 include './utils/Database.php';
-
+include './interfaces/ActiveRecordModel.php';
 include './models/AbstractModel.php';
 include './models/question.php';
 

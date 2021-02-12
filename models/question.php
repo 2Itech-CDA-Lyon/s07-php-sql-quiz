@@ -5,8 +5,6 @@
  */
 class Question extends AbstractModel
 {
-    const TABLE_NAME = 'question';
-
     /**
      * Text to display
      * @var string
@@ -39,33 +37,17 @@ class Question extends AbstractModel
         $this->rightAnswerId = $rightAnswerId;
     }
 
-    public function save(): void
+    static public function getTableName(): string
     {
-        // Si l'ID de l'objet est nul, c'est donc qu'il n'existe pas encore en BDD
-        if (is_null($this->id)) {
-            // Crée un enregistrement à partir des propriétés de l'objet en BDD
-            $this->insert();
-        // Sinon, c'est qu'il existe déjà en BDD
-        } else {
-            // Met à jour l'enregistrement existant en BDD par rapport aux propriétés de l'objet
-            $this->update();
-        }
-    }
-    
-    protected function insert(): void
-    {
-        $this->id = Database::getInstance()->insertIntoTable(static::class, [
-            'text' => $this->text,
-            'order' => $this->order,
-        ]);
+        return 'question';
     }
 
-    protected function update(): void
+    public function getProperties(): array
     {
-        Database::getInstance()->updateTable(static::class, $this->id, [
+        return [
             'text' => $this->text,
             'order' => $this->order,
-        ]);
+        ];
     }
 
     /**

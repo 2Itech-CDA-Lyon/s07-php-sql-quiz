@@ -1,9 +1,13 @@
 <?php
 
-abstract class AbstractModel
+/**
+ * Abstract model featuring default implementations for any Active Record model
+ */
+abstract class AbstractModel implements ActiveRecordModel
 {
     /**
      * Database ID
+     * 
      * @var int|null
      */
     protected ?int $id;
@@ -13,7 +17,7 @@ abstract class AbstractModel
      *
      * @return  int|null
      */ 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -40,7 +44,7 @@ abstract class AbstractModel
     }
     
     /**
-     * Fetch models from database based on criteria
+     * Fetch collection of models from database based on criteria
      *
      * @param array $criteria Criteria to be satisfied as collection of key/values
      * @return array
@@ -50,9 +54,38 @@ abstract class AbstractModel
         return Database::getInstance()->fetchFromTableWhere(static::class, $criteria);
     }
 
+    public function save(): void
+    {
+        // Si l'ID de l'objet est nul, c'est donc qu'il n'existe pas encore en BDD
+        if (is_null($this->id)) {
+            // Crée un enregistrement à partir des propriétés de l'objet en BDD
+            $this->insert();
+        // Sinon, c'est qu'il existe déjà en BDD
+        } else {
+            // Met à jour l'enregistrement existant en BDD par rapport aux propriétés de l'objet
+            $this->update();
+        }
+    }
+    
+    protected function insert(): void
+    {
+        $this->id = Database::getInstance()->insertIntoTable($this);
+    }
+
+    protected function update(): void
+    {
+        Database::getInstance()->updateTable($this);
+    }
+
+    /**
+     * Delete record associated with current object from database
+     *
+     * @return void
+     */
     public function delete(): void
     {
-        // Database::getInstance()->deleteFromTable(static::class, $this->id);
         Database::getInstance()->deleteFromTable($this);
+        $this->id = null;
     }
+
 }

@@ -1,11 +1,10 @@
 <?php
 
 include './utils/Database.php';
-
+include './interfaces/ActiveRecordModel.php';
 include './models/AbstractModel.php';
 include './models/question.php';
 include './models/answer.php';
-
 
 
 // Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
