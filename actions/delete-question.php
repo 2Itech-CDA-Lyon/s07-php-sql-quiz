@@ -1,9 +1,8 @@
 <?php
 
-include '../utils/Database.php';
-include '../interfaces/ActiveRecordModel.php';
-include '../models/AbstractModel.php';
-include '../models/question.php';
+require __DIR__ . '/../vendor/autoload.php';
+
+use App\Models\Question;
 
 // Si on arrive sur ce fichier par une méthode autre que POST, renvoie un code d'erreur
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
