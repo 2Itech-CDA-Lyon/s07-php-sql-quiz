@@ -16,6 +16,7 @@ interface ActiveRecordModel
      * Get the name of the table associated with the model
      *
      * @return string
+     * @static
      */
     static public function getTableName(): string;
 

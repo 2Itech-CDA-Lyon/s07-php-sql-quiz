@@ -54,6 +54,13 @@ abstract class AbstractModel implements ActiveRecordModel
         return Database::getInstance()->fetchFromTableWhere(static::class, $criteria);
     }
 
+    /**
+     * Save current objet state in database
+     *
+     * Decides whether to create a new record or update an existing record based on ID
+     * 
+     * @return void
+     */
     public function save(): void
     {
         // Si l'ID de l'objet est nul, c'est donc qu'il n'existe pas encore en BDD
@@ -67,11 +74,21 @@ abstract class AbstractModel implements ActiveRecordModel
         }
     }
     
+    /**
+     * Create new record in database
+     *
+     * @return void
+     */
     protected function insert(): void
     {
         $this->id = Database::getInstance()->insertIntoTable($this);
     }
 
+    /**
+     * Update existing record in database
+     *
+     * @return void
+     */
     protected function update(): void
     {
         Database::getInstance()->updateTable($this);
@@ -87,5 +104,4 @@ abstract class AbstractModel implements ActiveRecordModel
         Database::getInstance()->deleteFromTable($this);
         $this->id = null;
     }
-
 }

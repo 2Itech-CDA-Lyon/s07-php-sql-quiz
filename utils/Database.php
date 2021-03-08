@@ -129,12 +129,19 @@ class Database
         return $result;
     }
 
+    /**
+     * Create new record based on current object state
+     *
+     * @param ActiveRecordModel $instance The object from which to create a new record
+     * @return integer
+     */
     public function insertIntoTable(ActiveRecordModel $instance): int
     {
         // Récupère le nom de la table sur laquelle envoyer la requête
         $className = get_class($instance);
         $tableName = $className::getTableName();
 
+        // Construit la requête à partir du nom de la table et de la liste des propriétés
         $properties = $instance->getProperties();
         $query = 'INSERT INTO `' . $tableName . '` (';
         foreach (array_keys($properties) as $propertyName) {
@@ -148,21 +155,30 @@ class Database
         $query .= join(', ', $valueNames);
         $query .= ');';
 
+        // Exécute la requête en remplaçant tous les champs variables par les valeurs correspondantes
         $statement = $this->databaseHandler->prepare($query);
         foreach ($properties as $key => $value) {
             $params [':' . $key]= $value;
         }
         $statement->execute($params);
 
+        // Renvoie l'ID de l'objet qui vient d'être créé
         return $this->databaseHandler->lastInsertId();
     }
 
+    /**
+     * Update existing record based on current object state
+     *
+     * @param ActiveRecordModel $instance The object from which to update existing record
+     * @return void
+     */
     public function updateTable(ActiveRecordModel $instance): void
     {
         // Récupère le nom de la table sur laquelle envoyer la requête
         $className = get_class($instance);
         $tableName = $className::getTableName();
 
+        // Construit la requête à partir du nom de la table et de la liste des propriétés
         $properties = $instance->getProperties();
         $query = 'UPDATE `' . $tableName . '` SET ';
         foreach (array_keys($properties) as $propertyName) {
@@ -171,6 +187,7 @@ class Database
         $query .= join(', ', $sets);
         $query .= ' WHERE `id` = :id';
 
+        // Exécute la requête en remplaçant tous les champs variables par les valeurs correspondantes
         $statement = $this->databaseHandler->prepare($query);
         foreach ($properties as $key => $value) {
             $params [':' . $key]= $value;
