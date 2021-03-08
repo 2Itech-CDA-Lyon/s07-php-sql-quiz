@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Interfaces;
+
 /**
  * Ensures compatibility with all model classes
  */

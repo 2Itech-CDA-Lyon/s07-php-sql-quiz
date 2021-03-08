@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Models;
+
+use App\Utils\Database;
+use App\Interfaces\ActiveRecordModel;
+
 /**
  * Abstract model featuring default implementations for any Active Record model
  */

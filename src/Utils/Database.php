@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Utils;
+
+use PDO;
+use App\Interfaces\ActiveRecordModel;
+
 /**
  * Handles all communication with the database
  */

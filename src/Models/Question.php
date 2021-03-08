@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Models;
+
+use App\Models\AbstractModel;
+
 /**
  * Represents a question from a quiz
  */
