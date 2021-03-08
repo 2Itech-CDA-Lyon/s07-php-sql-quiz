@@ -1,70 +1,86 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
-
+use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
 
-// Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
-$hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
-// Si l'utilisateur vient de répondre à une question
-if ($hasAnswered) {
-  // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
-  $previousQuestion = Question::findById($_POST['current-question']);
+// Front Controller
+// Toutes les requêtes HTTP sont interceptées par le fichier .htaccess et redirigées vers ce fichier.
+// C'est lui qui s'occupe de décider quel traitement associer à chaque requête
 
-  // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
-  $userAnswerId = intval($_POST['answer']);
-  $rightlyAnswered = $previousQuestion->getRightAnswerId() === $userAnswerId;
+// Active le chargement automatique des classes
+require __DIR__ . '/vendor/autoload.php';
 
-  // Si l'utilisateur a mal répondu à la question précédente
-  if (!$rightlyAnswered) {
-    // Récupère la bonne réponse à la question précédente dans la BDD
-    $previousQuestionRightAnswer = Answer::findById($previousQuestion->getRightAnswerId());
+// Crée un routeur
+$router = new AltoRouter();
+
+// Paramètre les différentes routes de l'application
+
+// Page d'accueil
+$router->map( 'GET', '/', function() {
+  // Calcule si l'utilisateur vient de répondre à une question pour le réutiliser plus tard
+  $hasAnswered = isset($_POST['answer']) && isset($_POST['current-question']);
+  // Si l'utilisateur vient de répondre à une question
+  if ($hasAnswered) {
+      // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
+      $previousQuestion = Question::findById($_POST['current-question']);
+
+      // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
+      $userAnswerId = intval($_POST['answer']);
+      $rightlyAnswered = $previousQuestion->getRightAnswerId() === $userAnswerId;
+
+      // Si l'utilisateur a mal répondu à la question précédente
+      if (!$rightlyAnswered) {
+          // Récupère la bonne réponse à la question précédente dans la BDD
+          $previousQuestionRightAnswer = Answer::findById($previousQuestion->getRightAnswerId());
+      }
   }
+
+  // Récupère la première question du quiz dans la base de données
+  $result = Question::findWhere([ 'order' => 1 ]);
+  $question = $result[0];
+
+  // Récupère toutes les réponses associées à cette question dans la base de données
+  $answers = Answer::findWhere([ 'question_id' => $question->getId() ]);
+
+  // Paramètre une vue pour afficher la page demandée
+  return new View('pages/quiz', [
+      'hasAnswered' => $hasAnswered,
+      'rightlyAnswered' => $rightlyAnswered,
+      'question' => $question,
+      'answers' => $answers,
+      'previousQuestionRightAnswer' => $previousQuestionRightAnswer,
+  ]);
+}, 'home' );
+
+// Page du mode "création"
+$router->map( 'GET', '/create', function() {
+  // Récupère toutes les questions en base de données
+  $questions = Question::findAll();
+
+  // Paramètre une vue pour afficher la page demandée
+  return new View('pages/create', ['questions' => $questions]);
+}, 'create' );
+
+// Tente de trouver une correspondance entre les routes existantes et la requête du client
+$match = $router->match();
+
+// Si aucune correspondance n'a été trouvée
+if ($match === false) {
+  // Configure la réponse avec un code HTPP 404 - non trouvé
+  http_response_code(404);
+  // Paramètre une vue pour afficher une page "page non trouvée"
+  $view = new View('pages/not-found');
+// Sinon
+} else {
+  // Appelle la fonction correspondant à la route trouvée
+  $view = call_user_func($match['target']);
 }
 
-// Récupère la première question du quiz dans la base de données
-$result = Question::findWhere([ 'order' => 1 ]);
-$question = $result[0];
+// Si la variable view n'est pas définie, ou si ce n'est pas un objet View, envoie un message d'erreur
+if (!isset($view) || !$view instanceof View) {
+  throw new Error('Routes must return a View object.');
+}
 
-// Récupère toutes les réponses associées à cette question dans la base de données
-$answers = Answer::findWhere([ 'question_id' => $question->getId() ]);
-
-?>
-
-<?php include './templates/head.php' ?>
-<body>
-  <div class="container">
-    <h1>Quizz</h1>
-
-    <?php if ($hasAnswered): ?>
-      <?php if ($rightlyAnswered): ?>
-        <div id="answer-result" class="alert alert-success">
-          <i class="fas fa-thumbs-up"></i> Bravo, c'était la bonne réponse!
-        </div>
-      <?php else: ?>
-        <div id="answer-result" class="alert alert-danger">
-          <i class="fas fa-thumbs-down"></i> Hé non! La bonne réponse était <strong><?= $previousQuestionRightAnswer->getText() ?>.</strong>
-        </div>
-      <?php endif; ?>
-    <?php endif; ?>
-
-    <h2 class="mt-4">Question n°<span id="question-id"><?= $question->getOrder() ?></span></h2>
-    <form id="question-form" method="post">
-      <p id="current-question-text" class="question-text"><?= $question->getText() ?></p>
-      <div id="answers" class="d-flex flex-column">
-
-        <?php foreach ($answers as $key => $answer): ?>
-        <div class="custom-control custom-radio mb-2">
-          <input class="custom-control-input" type="radio" name="answer" id="answer<?= $key ?>" value="<?= $answer->getId() ?>">
-          <label class="custom-control-label" for="answer<?= $key ?>"><?php echo $answer->getText() ?></label>
-        </div>
-        <?php endforeach; ?>
-        
-      </div> 
-      <input type="hidden" name="current-question" value="<?= $question->getId() ?>" />
-      <button type="submit" class="btn btn-primary">Valider</button>
-    </form>
-  </div>
-</body>
-</html>
+// Génère la page HTML à partir de l'objet View paramétré précédemment
+$view->send();
