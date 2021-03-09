@@ -7,8 +7,7 @@
         <a class="btn btn-primary btn-sm" href="/question-edit.php?id=<?= $question->getId() ?>">
             <i class="fas fa-pen"></i>
         </a>
-        <form method="post" action="/actions/delete-question.php">
-            <input type="hidden" name="question-id" value="<?= $question->getId() ?>" />
+        <form method="post" action="/question/<?= $question->getId() ?>/delete">
             <button type="submit" class="btn btn-danger btn-sm">
                 <i class="fas fa-trash-alt"></i>
             </button>

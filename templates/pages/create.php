@@ -7,7 +7,7 @@
         <?php endforeach; ?>
     </ol>
 
-    <form method="post" action="/actions/save-question.php">
+    <form method="post" action="/question/create">
         <div class="mt-4 mb-3">
             <label for="newQuestion" class="form-label">Ajouter une nouvelle question</label>
             <input type="text" name="question-text" class="form-control" id="newQuestion" placeholder="Texte de la question" />

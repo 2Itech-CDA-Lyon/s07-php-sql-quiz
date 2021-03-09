@@ -20,6 +20,12 @@ $router->map( 'GET', '/', 'MainController#home', 'home' );
 // Page du mode "création"
 $router->map( 'GET', '/create', 'MainController#create', 'create' );
 
+// Action permettant de créer une question
+$router->map( 'POST', '/question/create', 'QuestionController#create', 'create_question' );
+
+// Action permettant de supprimer une question
+$router->map( 'POST', '/question/[i:id]/delete', 'QuestionController#delete', 'delete_question' );
+
 // Tente de trouver une correspondance entre les routes existantes et la requête du client
 $match = $router->match();
 
@@ -34,9 +40,9 @@ if ($match === false) {
   // Découpe le nom du contrôleur et le nom de la méthode correspondant à la route trouvée
   list($controllerName, $methodName) = explode('#', $match['target']);
   $controllerName = 'App\\Controllers\\' . $controllerName;
-  // Instancie le contrôleur et appelle la méthode correspondante
+  // Instancie le contrôleur et appelle la méthode correspondante, en passant tous les paramètres récupérés de l'URL le cas échéant
   $controller = new $controllerName;
-  $view = $controller->$methodName();
+  $view = $controller->$methodName(...array_values($match['params']));
 }
 
 // Si la variable view n'est pas définie, ou si ce n'est pas un objet View, envoie un message d'erreur
