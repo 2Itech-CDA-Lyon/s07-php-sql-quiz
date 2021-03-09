@@ -4,7 +4,7 @@
         <?= $question->getText() ?>
     </div>
     <div class="ml-4 d-flex">
-        <a class="btn btn-primary btn-sm" href="/question-edit.php?id=<?= $question->getId() ?>">
+        <a class="btn btn-primary btn-sm" href="/question/<?= $question->getId() ?>/edit">
             <i class="fas fa-pen"></i>
         </a>
         <form method="post" action="/question/<?= $question->getId() ?>/delete">

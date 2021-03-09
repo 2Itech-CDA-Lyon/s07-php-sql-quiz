@@ -21,10 +21,16 @@ $router->map( 'GET', '/', 'MainController#home', 'home' );
 $router->map( 'GET', '/create', 'MainController#create', 'create' );
 
 // Action permettant de créer une question
-$router->map( 'POST', '/question/create', 'QuestionController#create', 'create_question' );
+$router->map( 'POST', '/question/create', 'QuestionController#create', 'question_create' );
 
 // Action permettant de supprimer une question
-$router->map( 'POST', '/question/[i:id]/delete', 'QuestionController#delete', 'delete_question' );
+$router->map( 'POST', '/question/[i:id]/delete', 'QuestionController#delete', 'question_delete' );
+
+// Page contenant le formulaire de modication d'une question
+$router->map( 'GET', '/question/[i:id]/edit', 'QuestionController#editForm', 'question_edit_form' );
+
+// Action permettant de modifier une question
+$router->map( 'POST', '/question/[i:id]/edit', 'QuestionController#edit', 'question_edit' );
 
 // Tente de trouver une correspondance entre les routes existantes et la requête du client
 $match = $router->match();

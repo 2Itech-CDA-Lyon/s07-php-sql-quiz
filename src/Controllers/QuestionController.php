@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Views\View;
 use App\Models\Question;
 
 class QuestionController
@@ -26,7 +27,7 @@ class QuestionController
             $question->setOrder($_POST['question-order']);
 
             // Sauvegarde l'objet en BDD
-            $question->save();
+            $question->save(); 
 
             // Redirige vers la page du mode création
             header('Location: /create');
@@ -47,6 +48,47 @@ class QuestionController
         $question->delete();
 
         // Redirige vers la page du mode création
+        header('Location: /create');
+        die();
+    }
+
+    public function editForm(int $id)
+    {   
+        // Récupère la question associée à l'ID fourni
+        $question = Question::findById($id);
+
+        // Si l'ID fourni ne correspond à aucune question en BDD, affiche un message d'erreur
+        if ($question == null){
+            http_response_code(404);
+            echo 'Cette question n\'existe pas';
+            die();
+        }
+
+        // Paramètre une vue pour afficher la page demandée
+        return new View('pages/question-edit', [
+            'question' => $question
+        ]);
+    }
+
+    public function edit(int $id)
+    {
+        // Récupère la question associée à l'ID fourni
+        $question = Question::findById($id);
+
+        // Si l'ID fourni ne correspond à aucune question en BDD, affiche un message d'erreur
+        if($question == null){
+            http_response_code(404);
+            echo 'Cette question n\'existe pas';
+            die();
+        }
+
+        // Injecte les données du formulaire dans l'objet
+        $question->setText($_POST["question-text"]);
+
+        // Sauvegarde l'état actuel de l'objet en BDD
+        $question->save();
+
+        // Redirige vers la page "mode création"
         header('Location: /create');
         die();
     }
