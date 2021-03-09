@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Interfaces\HttpResponse;
 
 /**
  * Handles all general requests
@@ -13,9 +14,9 @@ class MainController {
     /**
      * Home page
      *
-     * @return View
+     * @return HttpResponse
      */
-    public function home(): View
+    public function home(): HttpResponse
     {
         // Récupère la première question du quiz dans la base de données
         $result = Question::findWhere([ 'order' => 1 ]);
@@ -37,9 +38,9 @@ class MainController {
     /**
      * Creation mode page
      *
-     * @return View
+     * @return HttpResponse
      */
-    public function create(): View
+    public function create(): HttpResponse
     {
         // Récupère toutes les questions en base de données
         $questions = Question::findAll();

@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Views\RedirectResponse;
+use App\Interfaces\HttpResponse;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\InvalidFormDataException;
 
@@ -16,9 +18,9 @@ class QuestionController
     /**
      * Action - create question
      *
-     * @return void
+     * @return HttpResponse
      */
-    public function create()
+    public function create(): HttpResponse
     {
         // Si toutes les données du formulaire sont présentes
         if (isset($_POST['question-text']) && isset($_POST['question-order'])) {
@@ -41,7 +43,7 @@ class QuestionController
             $question->save(); 
 
             // Redirige vers la page du mode création
-            header('Location: /create');
+            return new RedirectResponse('/create');
 
         // Sinon, c'est que l'utilisateur est arrivé sur cette page par un autre moyen que le formumaire dédié
         } else {
@@ -53,9 +55,9 @@ class QuestionController
      * Action - delete question
      *
      * @param integer $id
-     * @return void
+     * @return HttpResponse
      */
-    public function delete(int $id)
+    public function delete(int $id): HttpResponse
     {
         // Récupère la question associée à l'ID fourni dans la BDD
         $question = Question::findById($id);
@@ -69,17 +71,16 @@ class QuestionController
         $question->delete();
 
         // Redirige vers la page du mode création
-        header('Location: /create');
-        die();
+        return new RedirectResponse('/create');
     }
 
     /**
      * Page - question edit form
      *
      * @param integer $id
-     * @return void
+     * @return HttpResponse
      */
-    public function editForm(int $id)
+    public function editForm(int $id): HttpResponse
     {   
         // Récupère la question associée à l'ID fourni
         $question = Question::findById($id);
@@ -99,9 +100,9 @@ class QuestionController
      * Action - edit question
      *
      * @param integer $id
-     * @return void
+     * @return HttpResponse
      */
-    public function edit(int $id)
+    public function edit(int $id): HttpResponse
     {
         // Récupère la question associée à l'ID fourni
         $question = Question::findById($id);
@@ -118,17 +119,16 @@ class QuestionController
         $question->save();
 
         // Redirige vers la page "mode création"
-        header('Location: /create');
-        die();
+        return new RedirectResponse('/create');
     }
 
     /**
      * Action - process answer to a question
      *
      * @param integer $id
-     * @return void
+     * @return HttpResponse
      */
-    public function answer(int $id)
+    public function answer(int $id): HttpResponse
     {
         // Vérifie que le formulaire contient bien les données attendues
         if (isset($_POST['answer'])) {
@@ -157,8 +157,7 @@ class QuestionController
 
         // Si la question suivante n'existe pas, c'est donc qu'on a atteint la fin du quiz
         if (empty($result)) {
-            header('Location: /');
-            die();
+            return new RedirectResponse('/');
         }
 
         $nextQuestion = $result[0];

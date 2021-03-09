@@ -2,10 +2,13 @@
 
 namespace App\Views;
 
+use App\Interfaces\HttpResponse;
+
 /**
  * Handles generation of HTML documents
  */
-class View {
+class View implements HttpResponse
+{
     /**
      * Name of the template file to display
      * @var string
@@ -34,7 +37,7 @@ class View {
      *
      * @return void
      */
-    public function send(): void
+    public function render(): void
     {
         // Crée une variable pour chaque entrée du tableau "variables"
         foreach ($this->variables as $name => $value) {
@@ -47,5 +50,15 @@ class View {
         include './templates/' . $this->templateName . '.php';
         echo '</body>' . PHP_EOL;
         echo '</html>';
+    }
+
+    /**
+     * Send response to client
+     *
+     * @return void
+     */
+    public function send(): void
+    {
+        $this->render();
     }
 }
