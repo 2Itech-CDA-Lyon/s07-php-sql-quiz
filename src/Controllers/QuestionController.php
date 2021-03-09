@@ -3,10 +3,19 @@
 namespace App\Controllers;
 
 use App\Views\View;
+use App\Models\Answer;
 use App\Models\Question;
 
+/**
+ * Handles all requests pertaining to questions
+ */
 class QuestionController
 {
+    /**
+     * Action - create question
+     *
+     * @return void
+     */
     public function create()
     {
         // Si toutes les données du formulaire sont présentes
@@ -40,6 +49,12 @@ class QuestionController
         }
     }
 
+    /**
+     * Action - delete question
+     *
+     * @param integer $id
+     * @return void
+     */
     public function delete(int $id)
     {
         // Récupère la question associée à l'ID fourni dans la BDD
@@ -52,6 +67,12 @@ class QuestionController
         die();
     }
 
+    /**
+     * Page - question edit form
+     *
+     * @param integer $id
+     * @return void
+     */
     public function editForm(int $id)
     {   
         // Récupère la question associée à l'ID fourni
@@ -70,6 +91,12 @@ class QuestionController
         ]);
     }
 
+    /**
+     * Action - edit question
+     *
+     * @param integer $id
+     * @return void
+     */
     public function edit(int $id)
     {
         // Récupère la question associée à l'ID fourni
@@ -91,5 +118,60 @@ class QuestionController
         // Redirige vers la page "mode création"
         header('Location: /create');
         die();
+    }
+
+    /**
+     * Action - process answer to a question
+     *
+     * @param integer $id
+     * @return void
+     */
+    public function answer(int $id)
+    {
+        // Vérifie que le formulaire contient bien les données attendues
+        if (isset($_POST['answer'])) {
+            // Récupère la question à laquelle l'utilisateur vient de répondre dans la BDD
+            $previousQuestion = Question::findById($id);
+
+            // Calcule si la réponse donnée par l'utilisateur à la question précédente était la bonne réponse ou pas
+            $userAnswerId = intval($_POST['answer']);
+            $rightlyAnswered = $previousQuestion->getRightAnswerId() === $userAnswerId;
+
+            // Si l'utilisateur a mal répondu à la question précédente
+            if (!$rightlyAnswered) {
+                // Récupère la bonne réponse à la question précédente dans la BDD
+                $previousQuestionRightAnswer = Answer::findById($previousQuestion->getRightAnswerId());
+            } else {
+                $previousQuestionRightAnswer = null;
+            }
+        // Sinon, répond avec un code d'erreur
+        } else {
+            \http_response_code(400);
+            echo 'Invalid form data';
+            die();
+        }
+
+        // Récupère la question suivante dans l'ordre du quiz
+        $previousQuestion = Question::findById($id);
+        $result = Question::findWhere([ 'order' => $previousQuestion->getOrder() + 1 ]);
+
+        // Si la question suivante n'existe pas, c'est donc qu'on a atteint la fin du quiz
+        if (empty($result)) {
+            header('Location: /');
+            die();
+        }
+
+        $nextQuestion = $result[0];
+        // Récupère les réponses associées à cette question
+        $answers = Answer::findWhere([ 'question_id' => $nextQuestion->getId() ]);
+
+        // Paramètre une vue pour afficher la page demandée
+        return new View('pages/quiz', [
+            'hasAnswered' => true,
+            'rightlyAnswered' => $rightlyAnswered,
+            'question' => $nextQuestion,
+            'answers' => $answers,
+            'previousQuestionRightAnswer' => $previousQuestionRightAnswer,
+        ]);        
     }
 }

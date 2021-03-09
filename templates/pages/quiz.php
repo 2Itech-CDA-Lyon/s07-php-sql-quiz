@@ -14,7 +14,7 @@
             <?php endif; ?>
             
             <h2 class="mt-4">Question n°<span id="question-id"><?= $question->getOrder() ?></span></h2>
-            <form id="question-form" method="post">
+            <form id="question-form" method="post" action="/question/<?= $question->getId() ?>/answer">
             <p id="current-question-text" class="question-text"><?= $question->getText() ?></p>
             <div id="answers" class="d-flex flex-column">
             

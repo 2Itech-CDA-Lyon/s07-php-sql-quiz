@@ -32,6 +32,9 @@ $router->map( 'GET', '/question/[i:id]/edit', 'QuestionController#editForm', 'qu
 // Action permettant de modifier une question
 $router->map( 'POST', '/question/[i:id]/edit', 'QuestionController#edit', 'question_edit' );
 
+// Action permettant de traiter la réponse à une question
+$router->map( 'POST', '/question/[i:id]/answer', 'QuestionController#answer', 'question_answer' );
+
 // Tente de trouver une correspondance entre les routes existantes et la requête du client
 $match = $router->match();
 
