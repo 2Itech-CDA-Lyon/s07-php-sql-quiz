@@ -1,6 +1,8 @@
 <?php
 
 use App\Views\View;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\InvalidFormDataException;
 
 // Front Controller
 // Toutes les requêtes HTTP sont interceptées par le fichier .htaccess et redirigées vers ce fichier.
@@ -38,20 +40,29 @@ $router->map( 'POST', '/question/[i:id]/answer', 'QuestionController#answer', 'q
 // Tente de trouver une correspondance entre les routes existantes et la requête du client
 $match = $router->match();
 
-// Si aucune correspondance n'a été trouvée
-if ($match === false) {
-  // Configure la réponse avec un code HTPP 404 - non trouvé
-  http_response_code(404);
-  // Paramètre une vue pour afficher une page "page non trouvée"
-  $view = new View('pages/not-found');
-// Sinon
-} else {
+// Tente de faire fonctionner l'application normalement
+try {
+  if ($match === false) {
+    throw new NotFoundException();
+  }
+
   // Découpe le nom du contrôleur et le nom de la méthode correspondant à la route trouvée
   list($controllerName, $methodName) = explode('#', $match['target']);
   $controllerName = 'App\\Controllers\\' . $controllerName;
   // Instancie le contrôleur et appelle la méthode correspondante, en passant tous les paramètres récupérés de l'URL le cas échéant
   $controller = new $controllerName;
   $view = $controller->$methodName(...array_values($match['params']));
+}
+// En cas d'erreur liée à une ressource manquante
+catch (NotFoundException $exception) {
+  // Configure la réponse avec un code HTPP 404 - non trouvé
+  http_response_code(404);
+  // Paramètre une vue pour afficher une page "page non trouvée"
+  $view = new View('pages/not-found');
+}
+catch (InvalidFormDataException $exception) {
+  http_response_code(400);
+  $view = new View('pages/bad-request');
 }
 
 // Si la variable view n'est pas définie, ou si ce n'est pas un objet View, envoie un message d'erreur

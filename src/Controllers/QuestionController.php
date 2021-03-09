@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\InvalidFormDataException;
 
 /**
  * Handles all requests pertaining to questions
@@ -43,9 +45,7 @@ class QuestionController
 
         // Sinon, c'est que l'utilisateur est arrivé sur cette page par un autre moyen que le formumaire dédié
         } else {
-            http_response_code(400);
-            echo('Invalid form data');
-            die();
+            throw new InvalidFormDataException('Invalid form data');
         }
     }
 
@@ -59,6 +59,12 @@ class QuestionController
     {
         // Récupère la question associée à l'ID fourni dans la BDD
         $question = Question::findById($id);
+
+        // Si l'ID fourni ne correspond à aucune question en BDD, affiche un message d'erreur
+        if ($question == null){
+            throw new NotFoundException('Question #' . $id . ' does not exist in database.');
+        }
+        
         // Supprime la question de la base de données
         $question->delete();
 
@@ -80,11 +86,9 @@ class QuestionController
 
         // Si l'ID fourni ne correspond à aucune question en BDD, affiche un message d'erreur
         if ($question == null){
-            http_response_code(404);
-            echo 'Cette question n\'existe pas';
-            die();
+            throw new NotFoundException('Question #' . $id . ' does not exist in database.');
         }
-
+        
         // Paramètre une vue pour afficher la page demandée
         return new View('pages/question-edit', [
             'question' => $question
@@ -103,12 +107,10 @@ class QuestionController
         $question = Question::findById($id);
 
         // Si l'ID fourni ne correspond à aucune question en BDD, affiche un message d'erreur
-        if($question == null){
-            http_response_code(404);
-            echo 'Cette question n\'existe pas';
-            die();
+        if ($question == null){
+            throw new NotFoundException('Question #' . $id . ' does not exist in database.');
         }
-
+        
         // Injecte les données du formulaire dans l'objet
         $question->setText($_POST["question-text"]);
 
@@ -146,9 +148,7 @@ class QuestionController
             }
         // Sinon, répond avec un code d'erreur
         } else {
-            \http_response_code(400);
-            echo 'Invalid form data';
-            die();
+            throw new InvalidFormDataException('Field \'answer\' missing in form data.');
         }
 
         // Récupère la question suivante dans l'ordre du quiz
