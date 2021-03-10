@@ -20,7 +20,7 @@ class MainController {
      */
     public function home(): HttpResponse
     {
-        return new NoLayoutView('pages/home');
+        return new NoLayoutView('pages/home', 'home');
     }
 
     /**

@@ -10,11 +10,6 @@ use App\Interfaces\HttpResponse;
 abstract class View implements HttpResponse
 {
     /**
-     * Name of the template file to display
-     * @var string
-     */
-    protected string $templateName;
-    /**
      * List of all variables needed in the template
      * @var array
      */
@@ -23,12 +18,10 @@ abstract class View implements HttpResponse
     /**
      * Create new view
      *
-     * @param string $templateName Name of the template file to display
      * @param array $variables List of all variables needed in the template
      */
-    public function __construct(string $templateName, array $variables = [])
+    public function __construct(array $variables = [])
     {
-        $this->templateName = $templateName;
         $this->variables = $variables;
     }
 
@@ -49,8 +42,14 @@ abstract class View implements HttpResponse
      */
     public function render(): void
     {
-        // Génère le code HTML de la page
-        $this->includeTemplate('head');
+        echo '<!DOCTYPE html>' . PHP_EOL;
+        echo '<html lang="en">' . PHP_EOL;
+        echo '<head>' . PHP_EOL;
+
+        // Passe la main à la classe concrète qui choisit elle-même comment écrire le contenu de la balise head
+        $this->renderHead();
+
+        echo '</head>' . PHP_EOL;
         echo '<body>' . PHP_EOL;
 
         // Passe la main à la classe concrète qui choisit elle-même comment écrire le contenu de la balise body
@@ -59,6 +58,13 @@ abstract class View implements HttpResponse
         echo '</body>' . PHP_EOL;
         echo '</html>';
     }
+
+    /**
+     * Render page head
+     *
+     * @return void
+     */
+    abstract protected function renderHead(): void;
 
     /**
      * Render page body

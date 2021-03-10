@@ -10,13 +10,43 @@ use App\Views\View;
 class StandardLayoutView extends View
 {
     /**
+     * Name of the template file to display
+     * @var string
+     */
+    protected string $templateName;
+
+    /**
+     * Create new standard layout view
+     *
+     * @param string $templateName
+     * @param array $variables
+     */
+    public function __construct(string $templateName, array $variables = [])
+    {
+        parent::__construct($variables);
+        $this->templateName = $templateName;
+    }
+
+    /**
+     * Render page head
+     *
+     * @return void
+     */
+    protected function renderHead(): void
+    {
+        $this->includeTemplate('head/meta');
+        $this->includeTemplate('head/bootstrap');
+        $this->includeTemplate('head/fontawesome');
+        $this->includeTemplate('head/standard-layout');
+    }
+
+    /**
      * Render page body
      *
      * @return void
      */
     protected function renderBody(): void
     {
-        // Inclut 
         echo '<header>' . PHP_EOL;
         $this->includeTemplate('layout/header');
         echo '</header>' . PHP_EOL;
