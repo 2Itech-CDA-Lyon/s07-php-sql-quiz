@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Views\NoLayoutView;
 use App\Interfaces\HttpResponse;
 use App\Views\StandardLayoutView;
 
@@ -19,7 +20,7 @@ class MainController {
      */
     public function home(): HttpResponse
     {
-        return new StandardLayoutView('pages/home');
+        return new NoLayoutView('pages/home');
     }
 
     /**

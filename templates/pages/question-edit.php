@@ -11,7 +11,7 @@
         </div>
         <div>
             <button type="submit" class="btn btn-primary">Modifier</button>
-            <a class="btn btn-secondary" href="/create.php">Retour</a>
+            <a class="btn btn-secondary" href="/create">Retour</a>
         </div>
     </form>
 </div>

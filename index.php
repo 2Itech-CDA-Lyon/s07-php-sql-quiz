@@ -3,6 +3,7 @@
 use App\Views\View;
 use App\Views\RedirectResponse;
 use App\Interfaces\HttpResponse;
+use App\Views\StandardLayoutView;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\InvalidFormDataException;
 
@@ -63,11 +64,11 @@ catch (NotFoundException $exception) {
   // Configure la réponse avec un code HTTP 404 - non trouvé
   http_response_code(404);
   // Paramètre une vue pour afficher une page "page non trouvée"
-  $response = new View('pages/not-found');
+  $response = new StandardLayoutView('pages/not-found');
 }
 catch (InvalidFormDataException $exception) {
   http_response_code(400);
-  $response = new View('pages/bad-request');
+  $response = new StandardLayoutView('pages/bad-request');
 }
 
 // Si la variable response n'est pas définie, ou si ce n'est pas compatible avec une réponse HTTP, envoie un message d'erreur
