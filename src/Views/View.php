@@ -7,18 +7,18 @@ use App\Interfaces\HttpResponse;
 /**
  * Handles generation of HTML documents
  */
-class View implements HttpResponse
+abstract class View implements HttpResponse
 {
     /**
      * Name of the template file to display
      * @var string
      */
-    private string $templateName;
+    protected string $templateName;
     /**
      * List of all variables needed in the template
      * @var array
      */
-    private array $variables;
+    protected array $variables;
 
     /**
      * Create new view
@@ -32,6 +32,16 @@ class View implements HttpResponse
         $this->variables = $variables;
     }
 
+    protected function includeTemplate(string $templateName)
+    {
+        // Crée une variable pour chaque entrée du tableau "variables"
+        foreach ($this->variables as $name => $value) {
+            $$name = $value;
+        }
+
+        include './templates/' . $templateName . '.php';
+    }
+
     /**
      * Generate HTML code from view
      *
@@ -39,18 +49,23 @@ class View implements HttpResponse
      */
     public function render(): void
     {
-        // Crée une variable pour chaque entrée du tableau "variables"
-        foreach ($this->variables as $name => $value) {
-            $$name = $value;
-        }
-
         // Génère le code HTML de la page
-        include './templates/head.php';
+        $this->includeTemplate('head');
         echo '<body>' . PHP_EOL;
-        include './templates/' . $this->templateName . '.php';
+
+        // Passe la main à la classe concrète qui choisit elle-même comment écrire le contenu de la balise body
+        $this->renderBody();
+
         echo '</body>' . PHP_EOL;
         echo '</html>';
     }
+
+    /**
+     * Render page body
+     *
+     * @return void
+     */
+    abstract protected function renderBody(): void;
 
     /**
      * Send response to client

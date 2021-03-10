@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Views\RedirectResponse;
 use App\Interfaces\HttpResponse;
+use App\Views\StandardLayoutView;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\InvalidFormDataException;
 
@@ -91,7 +92,7 @@ class QuestionController
         }
         
         // Paramètre une vue pour afficher la page demandée
-        return new View('pages/question-edit', [
+        return new StandardLayoutView('pages/question-edit', [
             'question' => $question
         ]);
     }
@@ -165,7 +166,7 @@ class QuestionController
         $answers = Answer::findWhere([ 'question_id' => $nextQuestion->getId() ]);
 
         // Paramètre une vue pour afficher la page demandée
-        return new View('pages/quiz', [
+        return new StandardLayoutView('pages/quiz', [
             'hasAnswered' => true,
             'rightlyAnswered' => $rightlyAnswered,
             'question' => $nextQuestion,

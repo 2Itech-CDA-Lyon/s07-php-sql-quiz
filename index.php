@@ -21,6 +21,9 @@ $router = new AltoRouter();
 // Page d'accueil
 $router->map( 'GET', '/', 'MainController#home', 'home' );
 
+// Page permettant de jouer au quiz
+$router->map( 'GET', '/quiz', 'QuizController#index', 'quiz' );
+
 // Page du mode "création"
 $router->map( 'GET', '/create', 'MainController#create', 'create' );
 
@@ -57,7 +60,7 @@ try {
 }
 // En cas d'erreur liée à une ressource manquante
 catch (NotFoundException $exception) {
-  // Configure la réponse avec un code HTPP 404 - non trouvé
+  // Configure la réponse avec un code HTTP 404 - non trouvé
   http_response_code(404);
   // Paramètre une vue pour afficher une page "page non trouvée"
   $response = new View('pages/not-found');
