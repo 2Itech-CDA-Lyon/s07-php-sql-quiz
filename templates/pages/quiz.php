@@ -1,3 +1,4 @@
+<!-- pages/quiz -->
 <div class="container">
 <h1>Quizz</h1>
 

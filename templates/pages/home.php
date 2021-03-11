@@ -1,3 +1,4 @@
+<!-- pages/home -->
 <div class="HomePage">
     <div class="HomePage-title">
         <h1 class="mb-4">M2i Quiz</h1>

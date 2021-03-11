@@ -1,3 +1,4 @@
+<!-- pages/question-edit -->
 <div class="container">
     <h1>Mode édition</h1>
     <h2>Question n°<?= $question->getOrder() ?></h2>

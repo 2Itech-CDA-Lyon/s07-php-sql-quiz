@@ -1,3 +1,4 @@
+<!-- pages/create -->
 <div class="container">
     <h1>Mode création</h1>
     <h2>Questions</h2>
