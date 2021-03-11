@@ -16,6 +16,11 @@ class User extends AbstractModel
      * @var string
      */
     protected string $password;
+    /**
+     * Secret authentication key
+     * @var string
+     */
+    protected string $secret;
 
     /**
      * Create new user
@@ -24,11 +29,12 @@ class User extends AbstractModel
      * @param string $email Email address
      * @param string $password Password
      */
-    public function __construct(?int $id = null, string $email = '', string $password = '')
+    public function __construct(?int $id = null, string $email = '', string $password = '', string $secret='')
     {
         $this->id = $id;
         $this->email = $email;
         $this->password = $password;
+        $this->secret = $secret;
     }
 
     /**
@@ -52,6 +58,7 @@ class User extends AbstractModel
         return [
             'email' => $this->email,
             'password' => $this->password,
+            'secret' => $this->secret,
         ];
     }
 
@@ -99,6 +106,30 @@ class User extends AbstractModel
     public function setPassword(string $password)
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get secret authentication key
+     *
+     * @return  string
+     */ 
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
+     * Set secret authentication key
+     *
+     * @param  string  $secret  Secret authentication key
+     *
+     * @return  self
+     */ 
+    public function setSecret(string $secret)
+    {
+        $this->secret = $secret;
 
         return $this;
     }

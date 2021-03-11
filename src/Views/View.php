@@ -2,7 +2,9 @@
 
 namespace App\Views;
 
+use App\Models\User;
 use App\Interfaces\HttpResponse;
+use App\Utils\AuthenticationService;
 
 /**
  * Handles generation of HTML documents
@@ -14,6 +16,11 @@ abstract class View implements HttpResponse
      * @var array
      */
     protected array $variables;
+    /**
+     * Currently authenticated user
+     * @var User|null
+     */
+    protected ?User $currentUser;
 
     /**
      * Create new view
@@ -23,6 +30,10 @@ abstract class View implements HttpResponse
     public function __construct(array $variables = [])
     {
         $this->variables = $variables;
+
+        // Récupère les données de l'utilisateur actuellement connecté
+        $authenticationService = new AuthenticationService();
+        $this->currentUser = $authenticationService->getAuthenticatedUser();
     }
 
     protected function includeTemplate(string $templateName)
@@ -31,6 +42,8 @@ abstract class View implements HttpResponse
         foreach ($this->variables as $name => $value) {
             $$name = $value;
         }
+
+        $currentUser = $this->currentUser;
 
         include './templates/' . $templateName . '.php';
     }

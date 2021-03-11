@@ -5,6 +5,7 @@ use App\Views\RedirectResponse;
 use App\Interfaces\HttpResponse;
 use App\Views\StandardLayoutView;
 use App\Exceptions\NotFoundException;
+use App\Exceptions\UnauthorizedException;
 use App\Exceptions\InvalidFormDataException;
 
 // Front Controller
@@ -67,6 +68,10 @@ try {
   // Instancie le contrôleur et appelle la méthode correspondante, en passant tous les paramètres récupérés de l'URL le cas échéant
   $controller = new $controllerName;
   $response = $controller->$methodName(...array_values($match['params']));
+}
+catch (UnauthorizedException $exception) {
+  http_response_code(403);
+  $response = new StandardLayoutView('pages/unauthorized');
 }
 // En cas d'erreur liée à une ressource manquante
 catch (NotFoundException $exception) {

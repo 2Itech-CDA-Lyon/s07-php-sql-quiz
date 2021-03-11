@@ -74,13 +74,14 @@ CREATE TABLE `user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `secret` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `user` (`id`, `email`, `password`) VALUES
-(1,	'admin@test.com',	'admin'),
-(2,	'jeanpierre@test.com',	'jeanpierre'),
-(3,	'yvettemadeleine@test.com',	'yvettemadeleine');
+INSERT INTO `user` (`id`, `email`, `password`, `secret`) VALUES
+(1,	'admin@test.com',	'$2y$10$7eWZbPkuf.n/8IuP6hjI4unPkAJnZMHMLlozO.IxSsMMAIUBoBuMS', '2790ac17962a4339a9e83e2033dfa40c'),
+(2,	'jeanpierre@test.com',	'$2y$10$wiO5zVORpA5GRb1NwUF22.OkKKAa9mJEIIadq6VItDJxBXSI6g8Ye', '608012d535c3296add13d5a98561d8be'),
+(3,	'yvettemadeleine@test.com',	'$2y$10$jaXWQe/akDWgap4paXPhzu.1fuzZi.mNNPKXLbGY0GiGNF0GXqUXm', '38557e08b468873bcce66c6d2352ff1d');
 
 -- 2021-03-11 10:45:12

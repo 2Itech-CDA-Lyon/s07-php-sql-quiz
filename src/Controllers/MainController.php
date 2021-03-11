@@ -8,6 +8,8 @@ use App\Models\Question;
 use App\Views\NoLayoutView;
 use App\Interfaces\HttpResponse;
 use App\Views\StandardLayoutView;
+use App\Utils\AuthenticationService;
+use App\Exceptions\UnauthorizedException;
 
 /**
  * Handles all general requests
@@ -30,6 +32,10 @@ class MainController {
      */
     public function create(): HttpResponse
     {
+        // Si l'utilisateur n'est pas authentifié, renvoie une erreur
+        $authenticationService = new AuthenticationService();
+        $authenticationService->denyAccessUnlessGranted();
+
         // Récupère toutes les questions en base de données
         $questions = Question::findAll();
 

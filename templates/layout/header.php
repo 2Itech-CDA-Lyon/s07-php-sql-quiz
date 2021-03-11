@@ -13,15 +13,23 @@
         <li class="nav-item">
           <a class="nav-link" href="/quiz">Jouer</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/create">Créer</a>
-        </li>
+        <?php if (!is_null($currentUser)): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="/create">Créer</a>
+          </li>
+        <?php endif; ?>
       </ul>
       <div class="d-flex">
-        <a class="btn btn-primary" href="/login">Se connecter</a>
-        <form method="post" action="/logout">
-          <button class="btn btn-secondary" type="submit">Se déconnecter</button>
-        </form>      
+        <?php if (is_null($currentUser)): ?>
+          <a class="btn btn-primary" href="/login">Se connecter</a>
+        <?php else: ?>
+          <span>
+            Bonjour, <?= $currentUser->getEmail() ?>!
+          </span>
+          <form method="post" action="/logout">
+            <button class="btn btn-secondary" type="submit">Se déconnecter</button>
+          </form>
+        <?php endif; ?>
       </div>
     </div>
   </div>
