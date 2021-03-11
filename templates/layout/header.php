@@ -6,7 +6,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 mr-auto">
         <li class="nav-item">
           <a class="nav-link" href="/">Accueil</a>
         </li>
@@ -17,6 +17,12 @@
           <a class="nav-link" href="/create">Créer</a>
         </li>
       </ul>
+      <div class="d-flex">
+        <a class="btn btn-primary" href="/login">Se connecter</a>
+        <form method="post" action="/logout">
+          <button class="btn btn-secondary" type="submit">Se déconnecter</button>
+        </form>      
+      </div>
     </div>
   </div>
 </nav>

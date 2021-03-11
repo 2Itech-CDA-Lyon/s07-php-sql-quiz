@@ -43,6 +43,15 @@ $router->map( 'POST', '/question/[i:id]/edit', 'QuestionController#edit', 'quest
 // Action permettant de traiter la réponse à une question
 $router->map( 'POST', '/question/[i:id]/answer', 'QuestionController#answer', 'question_answer' );
 
+// Page d'authentification
+$router->map( 'GET', '/login', 'SecurityController#loginForm', 'login_form' );
+
+// Action permettant de s'authentifier
+$router->map( 'POST', '/login', 'SecurityController#login', 'login' );
+
+// Action permettant de supprimer ses informations d'authentification
+$router->map( 'POST', '/logout', 'SecurityController#logout', 'logout' );
+
 // Tente de trouver une correspondance entre les routes existantes et la requête du client
 $match = $router->match();
 

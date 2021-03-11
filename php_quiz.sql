@@ -69,4 +69,18 @@ CREATE TABLE `quiz` (
 INSERT INTO `quiz` (`id`, `title`, `description`, `difficulty`) VALUES
 (1,	'Les JOIN en SQL',	'Vous pensez être calé sur les clauses JOIN dans des requêtes SQL? Venez vous mesurer à notre quiz ultime!',	5);
 
--- 2021-02-12 13:37:26
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `user` (`id`, `email`, `password`) VALUES
+(1,	'admin@test.com',	'admin'),
+(2,	'jeanpierre@test.com',	'jeanpierre'),
+(3,	'yvettemadeleine@test.com',	'yvettemadeleine');
+
+-- 2021-03-11 10:45:12
