@@ -15,6 +15,9 @@ use App\Exceptions\InvalidFormDataException;
 // Active le chargement automatique des classes
 require __DIR__ . '/vendor/autoload.php';
 
+// Active l'accès à la session pour pouvoir la réutiliser dans les contrôleurs ($_SESSION)
+session_start();
+
 // Crée un routeur
 $router = new AltoRouter();
 

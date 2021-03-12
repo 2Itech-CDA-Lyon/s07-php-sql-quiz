@@ -3,9 +3,11 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Views\FlashMessage;
 use App\Views\RedirectResponse;
 use App\Interfaces\HttpResponse;
 use App\Views\StandardLayoutView;
+use App\Utils\FlashMessagesService;
 use App\Utils\AuthenticationService;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\InvalidFormDataException;
@@ -26,6 +28,8 @@ class SecurityController
 
     public function login(): HttpResponse
     {
+        $flashMessagesService = new FlashMessagesService();
+
         // Tente d'authentifier l'utilisateur à l'aide des données du formulaire
         try {
             if (!isset($_POST['email']) || !isset($_POST['password'])) {
@@ -40,8 +44,12 @@ class SecurityController
             $authenticationService = new AuthenticationService();
             $authenticationService->authenticate($email, $password);
 
+            $flashMessagesService->addMessage(
+                new FlashMessage('Vous êtes maintenant connecté!', 'success') 
+            );
+
             // Redirige sur la page d'accueil
-            return new RedirectResponse('/');
+            return new RedirectResponse('/create');
         }
         // En cas d'erreur liée à des identifiants incorrects
         catch (InvalidCredentialsException $exception) {
@@ -49,9 +57,15 @@ class SecurityController
             switch ($exception->getType()) {
                 case InvalidCredentialsException::WRONG_EMAIL:
                     // TODO: message 'email non existant'
+                    $flashMessagesService->addMessage(
+                        new FlashMessage('Il n\'y a aucune compte associé à cette adresse e-mail.', 'danger') 
+                    );
                     break;
                 case InvalidCredentialsException::WRONG_PASSWORD:
                     // TODO: message 'mauvais mot de passe'
+                    $flashMessagesService->addMessage(
+                        new FlashMessage('Mot de passe incorrect.', 'danger') 
+                    );
                     break;
                 default:
                     // TODO: ajouter une erreur 'ce code ne devrait jamais être atteint'

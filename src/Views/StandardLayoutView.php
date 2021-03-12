@@ -3,6 +3,7 @@
 namespace App\Views;
 
 use App\Views\View;
+use App\Utils\FlashMessagesService;
 
 /**
  * Handles generation of HTML documents including a standard layout with header and footer
@@ -47,9 +48,19 @@ class StandardLayoutView extends View
      */
     protected function renderBody(): void
     {
+        $flashMessagesService = new FlashMessagesService();
+
         echo '<header>' . PHP_EOL;
         $this->includeTemplate('layout/header');
         echo '</header>' . PHP_EOL;
+
+        echo '<div class="container mt-4">' . PHP_EOL;
+        $flashMessage = $flashMessagesService->getMessage();
+        if (!is_null($flashMessage)) {
+            include './templates/layout/flash-message.php';
+            $flashMessagesService->deleteMessage();
+        }
+        echo '</div>';
 
         echo '<main class="Main">' . PHP_EOL;
         $this->includeTemplate($this->templateName);
