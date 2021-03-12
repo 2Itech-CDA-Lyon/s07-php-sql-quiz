@@ -5,9 +5,11 @@ namespace App\Controllers;
 use App\Views\View;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Views\FlashMessage;
 use App\Views\RedirectResponse;
 use App\Interfaces\HttpResponse;
 use App\Views\StandardLayoutView;
+use App\Utils\FlashMessagesService;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\InvalidFormDataException;
 
@@ -41,7 +43,12 @@ class QuestionController
             $question->setOrder($_POST['question-order']);
 
             // Sauvegarde l'objet en BDD
-            $question->save(); 
+            $question->save();
+
+            $flashMessagesService = new FlashMessagesService();
+            $flashMessagesService->addMessage(
+                new FlashMessage('Question créée avec succès!', 'success')
+            );
 
             // Redirige vers la page du mode création
             return new RedirectResponse('/create');
@@ -70,6 +77,11 @@ class QuestionController
         
         // Supprime la question de la base de données
         $question->delete();
+
+        $flashMessagesService = new FlashMessagesService();
+        $flashMessagesService->addMessage(
+            new FlashMessage('Question supprimée avec succès!', 'success')
+        );
 
         // Redirige vers la page du mode création
         return new RedirectResponse('/create');
@@ -118,6 +130,11 @@ class QuestionController
 
         // Sauvegarde l'état actuel de l'objet en BDD
         $question->save();
+
+        $flashMessagesService = new FlashMessagesService();
+        $flashMessagesService->addMessage(
+            new FlashMessage('Question modifiée avec succès!', 'success')
+        );
 
         // Redirige vers la page "mode création"
         return new RedirectResponse('/create');
