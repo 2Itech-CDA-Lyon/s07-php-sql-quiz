@@ -70,6 +70,7 @@ class SecurityController
                 default:
                     // TODO: ajouter une erreur 'ce code ne devrait jamais être atteint'
             }
+
             // Redirige sur la page d'authentification
             return new RedirectResponse('/login');
         }

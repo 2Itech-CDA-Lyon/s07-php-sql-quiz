@@ -6,6 +6,15 @@ use App\Views\FlashMessage;
 
 class FlashMessagesService
 {
+    public function __construct()
+    {
+        // Vérifie que la session contient bien un tableau de messages afin d'éviter que le service ne tente
+        // de faire des opérations de tableau sur une valeur non-existante
+        if (!isset($_SESSION['messages'])) {
+            $_SESSION['messages'] = [];
+        }
+    }
+
     /**
      * Store flash message in session
      *
@@ -15,23 +24,25 @@ class FlashMessagesService
     public function addMessage(FlashMessage $flashMessage): void
     {
         // Demande à l'objet FlashMessage de se transformer en tableau associatif, afin de le stocker dans la session
-        $_SESSION['message'] = $flashMessage->toArray();
+        array_push($_SESSION['messages'], $flashMessage->toArray());
     }
 
     /**
      * Get flash message stored in session
      *
-     * @return FlashMessage|null
+     * @return FlashMessage[]|null
      */
-    public function getMessage(): ?FlashMessage
+    public function getMessages(): array
     {
-        // Si aucun message n'a été stocké dans la session, renvoie null
-        if (!isset($_SESSION['message'])) {
-            return null;
+        $flashMessages = [];
+
+        // Transforme les tableaux associatifs correspondant à des messages stockés en session en objets FlashMessage
+        foreach ($_SESSION['messages'] as $messageArray) {
+            // Demande à la classe FlashMessage de construire un nouvel objet à partir du tableau associatif stocké en session
+            $flashMessages []= FlashMessage::fromArray($messageArray);
         }
 
-        // Demande à la classe FlashMessage de construire un nouvel objet à partir du tableau associatif stocké en session
-        return FlashMessage::fromArray($_SESSION['message']);
+        return $flashMessages;
     }
 
     /**
@@ -39,11 +50,9 @@ class FlashMessagesService
      *
      * @return void
      */
-    public function deleteMessage(): void
+    public function deleteMessages(): void
     {
         // Supprime les informations du message stockées en session
-        if (isset($_SESSION['message'])) {
-            unset($_SESSION['message']);
-        }
+        $_SESSION['messages'] = [];
     }
 }

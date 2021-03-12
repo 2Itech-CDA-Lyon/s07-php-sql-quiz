@@ -55,11 +55,11 @@ class StandardLayoutView extends View
         echo '</header>' . PHP_EOL;
 
         echo '<div class="container mt-4">' . PHP_EOL;
-        $flashMessage = $flashMessagesService->getMessage();
-        if (!is_null($flashMessage)) {
+        $flashMessages = $flashMessagesService->getMessages();
+        foreach ($flashMessages as $flashMessage) {
             include './templates/layout/flash-message.php';
-            $flashMessagesService->deleteMessage();
         }
+        $flashMessagesService->deleteMessages();
         echo '</div>';
 
         echo '<main class="Main">' . PHP_EOL;
